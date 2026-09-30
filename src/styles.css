@@ -2246,3 +2246,155 @@ body::after {
     animation: none;
   }
 }
+
+/* ================================================================
+   SAFE FIX — submit row, lighter palette and quiet flowers
+   This block intentionally changes visual styling only.
+================================================================ */
+
+:root {
+  --ivory: #fffdfb;
+  --paper: #fffcfa;
+  --paper-deep: #fbf0f2;
+  --dusty-rose: #cf8fa0;
+  --rose-beige: #c09ca0;
+  --rose-ink: #5b4750;
+  --coral: #d995a3;
+  --coral-soft: #fdf0f2;
+  --teal: #b97689;
+  --teal-deep: #96546e;
+  --teal-soft: #faedf0;
+  --love-shadow: rgba(168, 91, 116, .07);
+}
+
+body {
+  background:
+    radial-gradient(circle at 7% 13%, rgba(255, 231, 237, .3), transparent 23rem),
+    radial-gradient(circle at 91% 20%, rgba(255, 245, 233, .38), transparent 25rem),
+    var(--ivory);
+}
+
+/* Critical layout fix: the top question row never lets the submit button wrap. */
+.app-shell--quiz .question-stage-top {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: 12px !important;
+  min-width: 0;
+}
+
+.app-shell--quiz .question-stage-top > :first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.app-shell--quiz .question-stage-top .submit-now-button {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-self: flex-start !important;
+  margin: 0 0 0 auto !important;
+  white-space: nowrap !important;
+  transform: none;
+}
+
+.app-shell--quiz .question-set-label {
+  min-width: 0;
+}
+
+/* Keep the exam banner itself from pushing the separate submit action. */
+.app-shell--quiz .exam-banner {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Softer controls: a little less saturation and less shadow. */
+.app-shell--quiz .submit-now-button,
+.app-shell--welcome .button--primary,
+.app-shell--welcome .builder-entry {
+  color: #fffdfc;
+  background: linear-gradient(135deg, #c78091, #dfa1ad);
+  border-color: #d39aa7;
+  box-shadow: 0 5px 13px rgba(185, 97, 120, .1);
+}
+
+.app-shell--quiz .submit-now-button:hover,
+.app-shell--welcome .button--primary:hover:not(:disabled),
+.app-shell--welcome .builder-entry:hover {
+  color: #fffdfc;
+  background: linear-gradient(135deg, #bd7185, #d691a0);
+  border-color: #c88494;
+  box-shadow: 0 7px 16px rgba(185, 97, 120, .14);
+}
+
+.app-shell--welcome .welcome-copy h1 em::after {
+  color: #cc8798;
+}
+
+.app-shell--welcome .portrait-caption {
+  background: rgba(255, 253, 250, .94);
+  border-left-color: #d49aa7;
+  box-shadow: 0 9px 22px rgba(143, 83, 99, .08);
+}
+
+/* Small CSS flowers: soft four-petal forms, no emoji and no external asset. */
+.app-shell--welcome .welcome-layout::after,
+.app-shell--result .result-header::after {
+  position: absolute;
+  z-index: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 16%, rgba(217, 145, 160, .65) 0 33%, transparent 36%),
+    radial-gradient(ellipse at 84% 50%, rgba(217, 145, 160, .55) 0 33%, transparent 36%),
+    radial-gradient(ellipse at 50% 84%, rgba(217, 145, 160, .5) 0 33%, transparent 36%),
+    radial-gradient(ellipse at 16% 50%, rgba(217, 145, 160, .55) 0 33%, transparent 36%),
+    radial-gradient(circle, #e9b36f 0 14%, transparent 17%);
+  opacity: .26;
+  filter: blur(.15px);
+  box-shadow: 23vw 16vh 0 rgba(217, 145, 160, .16), 53vw 56vh 0 rgba(217, 145, 160, .13);
+  animation: flowerFloatSoft 16s ease-in-out infinite;
+}
+
+.app-shell--welcome .welcome-layout::after {
+  top: 20%;
+  right: 5%;
+}
+
+.app-shell--result .result-header::after {
+  top: 14px;
+  right: 18px;
+  transform: scale(.8);
+}
+
+@keyframes flowerFloatSoft {
+  0%, 100% { transform: translate3d(0, 4px, 0) rotate(0deg); }
+  50% { transform: translate3d(-8px, -10px, 0) rotate(14deg); }
+}
+
+@media (max-width: 680px) {
+  .app-shell--quiz .question-stage-top {
+    gap: 8px !important;
+  }
+
+  .app-shell--quiz .question-stage-top .submit-now-button {
+    min-width: max-content;
+    padding-inline: 9px;
+    font-size: 9px;
+  }
+
+  .app-shell--welcome .welcome-layout::after {
+    right: 3%;
+    opacity: .18;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell--welcome .welcome-layout::after,
+  .app-shell--result .result-header::after {
+    animation: none;
+  }
+}

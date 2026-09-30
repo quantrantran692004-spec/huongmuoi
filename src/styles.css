@@ -2398,3 +2398,156 @@ body {
     animation: none;
   }
 }
+
+/* ================================================================
+   SUBMIT CONFIRMATION MODAL
+   Softer, clearer and more premium; behavior remains unchanged.
+================================================================ */
+
+.app-shell--quiz .dialog-backdrop {
+  z-index: 50;
+  padding: 22px;
+  background: rgba(92, 70, 78, .22);
+  backdrop-filter: blur(7px) saturate(.88);
+  animation: submitBackdropIn .22s ease-out both;
+}
+
+.app-shell--quiz .submit-dialog {
+  width: min(100%, 390px);
+  padding: 27px 29px 25px;
+  overflow: hidden;
+  background: rgba(255, 253, 251, .98);
+  border: 1px solid #f0dce1;
+  border-top: 3px solid #d995a3;
+  border-radius: 14px 14px 10px 10px;
+  box-shadow: 0 24px 70px rgba(91, 64, 76, .16), 0 5px 18px rgba(168, 91, 116, .08);
+  animation: submitDialogIn .28s cubic-bezier(.22, .75, .25, 1) both;
+}
+
+.app-shell--quiz .dialog-icon {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 16px;
+  color: #c9788b;
+  background: #fbecef;
+  border: 1px solid #f1d9df;
+  box-shadow: 0 5px 13px rgba(201, 120, 139, .08);
+}
+
+.app-shell--quiz .submit-dialog h2 {
+  margin: 0 0 8px;
+  color: #58444d;
+  font-size: 23px;
+  line-height: 1.12;
+  letter-spacing: -.055em;
+}
+
+.app-shell--quiz .submit-dialog p {
+  max-width: 310px;
+  color: #9a858c;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.app-shell--quiz .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 23px;
+}
+
+.app-shell--quiz .dialog-actions .button {
+  min-height: 38px;
+  padding-inline: 16px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.app-shell--quiz .dialog-actions .button:first-child {
+  color: #ae7785;
+  background: #fffdfb;
+  border: 1px solid #e7cbd2;
+  box-shadow: none;
+}
+
+.app-shell--quiz .dialog-actions .button:first-child:hover {
+  color: #96546e;
+  background: #fff5f6;
+  border-color: #dca7b4;
+}
+
+.app-shell--quiz .dialog-actions .button:last-child {
+  color: #fffdfc;
+  background: linear-gradient(135deg, #c78091, #dfa1ad);
+  border: 1px solid #d39aa7;
+  box-shadow: 0 5px 13px rgba(185, 97, 120, .12);
+}
+
+.app-shell--quiz .dialog-actions .button:last-child:hover {
+  background: linear-gradient(135deg, #bd7185, #d691a0);
+  box-shadow: 0 7px 16px rgba(185, 97, 120, .16);
+}
+
+@keyframes submitBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes submitDialogIn {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 480px) {
+  .app-shell--quiz .submit-dialog {
+    padding: 23px 21px 21px;
+  }
+
+  .app-shell--quiz .dialog-actions {
+    gap: 8px;
+  }
+
+  .app-shell--quiz .dialog-actions .button {
+    flex: 1 1 0;
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell--quiz .dialog-backdrop,
+  .app-shell--quiz .submit-dialog {
+    animation: none;
+  }
+}
+
+/* ================================================================
+   MODAL POSITION FIX
+   The confirmation layer must stay viewport-centered regardless of
+   quiz content height or current scroll position.
+================================================================ */
+
+.app-shell--quiz .dialog-backdrop,
+.app-shell--quiz > .dialog-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  z-index: 100 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+.app-shell--quiz .dialog-backdrop .submit-dialog {
+  position: relative;
+  z-index: 101;
+  align-self: center;
+  justify-self: center;
+  margin: auto;
+}

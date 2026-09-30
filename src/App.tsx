@@ -381,7 +381,7 @@ function App() {
     <main className="app-shell app-shell--quiz">
       <header className="topbar">
         <AppLogo />
-          <div className="quiz-header-meta"><div className="quiz-title"><span>Bộ Đề Thi :
+          <div className="quiz-header-meta"><div className="quiz-title"><span>Bộ Đề Thi:
             
             </span><strong>{examTitle}</strong></div><div className={`timer ${isUrgent ? 'timer--urgent' : ''}`} aria-live="polite" aria-label={`Thời gian còn lại ${formatTime(timeLeft)}`}><Clock3 size={17} /><span>{formatTime(timeLeft)}</span>{isUrgent && <small>SẮP HẾT GIỜ</small>}</div><div className="topbar-separator" /><span className="quiz-code">BÀI THI #EF-001</span><button className="fullscreen-button" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Thoát toàn màn hình' : 'Bật toàn màn hình'}>{isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}<span>{isFullscreen ? 'Thoát fullscreen' : 'Toàn màn hình'}</span></button><button className="icon-button" aria-label="Trợ giúp"><HelpCircle size={20} /></button></div>
       </header>

@@ -110,7 +110,7 @@ button:focus-visible { outline: 3px solid rgba(232, 111, 81, .45); outline-offse
 .question-breadcrumb > span:nth-child(3) { color: #a3a6a2; }
 .marked-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 7px; padding: 5px 8px; color: #bd5b40; background: var(--coral-soft); border-radius: 3px; font-size: 9px; letter-spacing: .02em; }
 .question-heading { margin: 21px 0 28px; }
-.question-heading h1 { max-width: 720px; margin: 0 0 11px; color: var(--ink); font-size: clamp(24px, 3vw, 38px); line-height: 1.16; letter-spacing: -.065em; }
+.question-heading h1 { max-width: 720px; margin: 0 0 11px; color: var(--ink); font-size: clamp(px, 2.4vw, 30px); line-height: 1.16; letter-spacing: -.065em; }
 .question-heading p { margin: 0; color: var(--muted); font-size: 12px; }
 .code-context { margin: -6px 0 25px; padding: 17px 19px; color: #dfece7; background: #243940; border-radius: 5px; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.7; }
 .option-list { display: flex; flex-direction: column; gap: 11px; }

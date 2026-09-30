@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">ExamFlow logo</title>
+  <desc id="desc">Two angled marks forming an exam flow symbol</desc>
+  <rect width="64" height="64" fill="#1f5c5c"/>
+  <path d="M18 14 7 32l11 18h9L17 32l10-18z" fill="#f6c752"/>
+  <path d="m46 14 11 18-11 18h-9l10-18-10-18z" fill="#e86f51"/>
+  <path d="M28 18h8l-5 28h-8z" fill="#f7f5f0"/>
+</svg>

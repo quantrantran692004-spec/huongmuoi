@@ -1,0 +1,33 @@
+{
+  "name": "examflow",
+  "private": true,
+  "version": "0.2.0",
+  "packageManager": "npm@10.9.2",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/index.mjs",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --pretty false",
+    "start": "node server/index.mjs",
+    "preview": "NODE_ENV=production node server/index.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "cheerio": "latest",
+    "docx": "latest",
+    "dotenv": "^18.0.4",
+    "express": "latest",
+    "lucide-react": "latest",
+    "mammoth": "latest",
+    "multer": "latest",
+    "pdf-parse": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
+  }
+}

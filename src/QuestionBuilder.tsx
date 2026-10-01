@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, CheckCircle2, ChevronDown, Download, FileText, Globe2, LoaderCircle, Sparkles, Upload, WandSparkles } from 'lucide-react'
 
 export type GeneratedQuestion = {
@@ -38,8 +38,15 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
   const [loading, setLoading] = useState<'extract' | 'scrape' | 'generate' | 'export' | null>(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const generatedSectionRef = useRef<HTMLElement | null>(null)
 
   const sourcePreview = useMemo(() => sourceText.length > 300 ? `${sourceText.slice(0, 300)}…` : sourceText, [sourceText])
+  const questionCountOptions = useMemo(() => Array.from({ length: 10 }, (_, index) => (index + 1) * 10), [])
+  useEffect(() => {
+    if (!questions.length) return
+    const scrollTimer = window.setTimeout(() => generatedSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120)
+    return () => window.clearTimeout(scrollTimer)
+  }, [questions.length])
 
   function clearFeedback() {
     setError('')
@@ -84,6 +91,7 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
   async function generateQuestions() {
     clearFeedback()
     if (sourceText.trim().length < 80 && topic.trim().length < 3 && instructions.trim().length < 3) return setError('Hãy nhập yêu cầu ở Bước 02, chủ đề, hoặc dán nội dung / tải file / đọc URL trước.')
+    setQuestions([])
     setLoading('generate')
     try {
       const payload = await readJson(await fetch('/api/generate-questions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceText, topic, instructions, count: Number(count), difficulty }) }))
@@ -148,13 +156,13 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
             <div className="builder-card-heading"><div><span className="card-kicker">BƯỚC 02</span><h2>Thiết lập bài thi</h2></div><WandSparkles size={20} /></div>
             <label className="field-label">Chủ đề hoặc tên bài<span>Không bắt buộc</span><input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="Ví dụ: JavaScript cơ bản" /></label>
             <label className="field-label instruction-field">Nhập yêu cầu của bạn<span>Tùy chọn · chỉ dẫn riêng cho AI, không phải tài liệu nguồn</span><textarea value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="Tạo câu hỏi về mạng máy tính" maxLength={1200} aria-label="Yêu cầu riêng cho AI" /></label>
-            <div className="field-row"><label className="field-label">Số câu<select value={count} onChange={(event) => setCount(event.target.value)}>{[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => <option value={value} key={value}>{value} câu</option>)}</select></label><label className="field-label">Độ khó<select value={difficulty} onChange={(event) => setDifficulty(event.target.value)}><option>Dễ</option><option>Vừa</option><option>Khó</option></select></label></div>
+            <div className="field-row"><label className="field-label">Số câu<span>10–100 câu</span><select value={count} onChange={(event) => setCount(event.target.value)}>{questionCountOptions.map((value) => <option value={value} key={value}>{value} câu</option>)}</select></label><label className="field-label">Độ khó<select value={difficulty} onChange={(event) => setDifficulty(event.target.value)}><option>Dễ</option><option>Vừa</option><option>Khó</option></select></label></div>
             <div className="ai-note"><Sparkles size={16} /><p><strong>CÂU HỎI VÀ ĐÁP ÁN ĐÃ KIỂM ĐỊNH</strong><br />Chỉ nhập chủ đề cũng đủ. Mỗi câu được rà lại đáp án, lựa chọn trùng và độ mơ hồ trước khi hiển thị.</p></div>
             <button className="button button--primary button--generate" onClick={generateQuestions} disabled={loading === 'generate'}>{loading === 'generate' ? <><LoaderCircle className="spin" size={17} /> Đang tạo câu hỏi…</> : <><Sparkles size={17} /> Tạo bộ đề kiểm tra</>}</button>
           </section>
         </div>
         {(error || notice) && <div className={error ? 'builder-feedback builder-feedback--error builder-feedback--toast' : 'builder-feedback builder-feedback--toast'} role="status" aria-live="polite">{error || notice}</div>}
-        {questions.length > 0 && <section className="generated-section"><div className="generated-heading"><div><span className="card-kicker">BƯỚC 03 · ĐÃ TẠO</span><h2>Bộ câu hỏi của bạn <span>{questions.length}</span></h2><p>Kiểm tra nhanh nội dung trước khi dùng hoặc xuất thành file Word.</p></div><div className="generated-actions"><button className="button button--primary" onClick={() => exportDocx(true)} disabled={loading === 'export'}><Download size={16} /> Xuất có đáp án</button><button className="button button--secondary" onClick={() => exportDocx(false)} disabled={loading === 'export'}>{loading === 'export' ? <LoaderCircle className="spin" size={16} /> : <Download size={16} />} Xuất đề trống</button><button className="button button--secondary" onClick={() => onShareExam?.(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Chia sẻ link</button><button className="button button--primary" onClick={() => onStartExam(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Dùng để làm bài <Sparkles size={16} /></button></div></div><div className="generated-list">{questions.map((question, index) => { const isExpanded = expandedQuestionId === question.id; return <article className={`generated-question ${isExpanded ? 'generated-question--expanded' : ''}`} key={`${question.id}-${index}`}><div className="generated-number">{String(index + 1).padStart(2, '0')}</div><div className="generated-body"><div className="generated-meta"><span>{question.category}</span><span className="ai-badge"><Sparkles size={11} /> ĐÃ KIỂM TRA</span></div><button className="generated-question-toggle" onClick={() => setExpandedQuestionId(isExpanded ? null : question.id)} aria-expanded={isExpanded}><h3>{question.prompt}</h3><ChevronDown size={18} /></button>{isExpanded && <><div className="generated-options">{question.options.map((option, optionIndex) => <div className={optionIndex === question.correctIndex ? 'generated-option generated-option--correct' : 'generated-option'} key={option}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}{optionIndex === question.correctIndex && <CheckCircle2 size={15} />}</div>)}</div><div className="generated-explanation"><strong>Giải thích:</strong> {question.explanation}</div></>}</div></article>})}</div></section>}
+        {questions.length > 0 && <section className="generated-section" ref={generatedSectionRef}><div className="generated-heading"><div><span className="card-kicker">BƯỚC 03 · ĐÃ TẠO</span><h2>Bộ câu hỏi của bạn <span>{questions.length}</span></h2><p>Đã tạo xong — bạn đang ở phần xem đề. Bấm từng câu để mở đáp án và giải thích.</p></div><div className="generated-actions"><button className="button button--primary" onClick={() => exportDocx(true)} disabled={loading === 'export'}><Download size={16} /> Xuất có đáp án</button><button className="button button--secondary" onClick={() => exportDocx(false)} disabled={loading === 'export'}>{loading === 'export' ? <LoaderCircle className="spin" size={16} /> : <Download size={16} />} Xuất đề trống</button><button className="button button--secondary" onClick={() => onShareExam?.(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Chia sẻ link</button><button className="button button--primary" onClick={() => onStartExam(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Dùng để làm bài <Sparkles size={16} /></button></div></div><div className="generated-list">{questions.map((question, index) => { const isExpanded = expandedQuestionId === question.id; return <article className={`generated-question ${isExpanded ? 'generated-question--expanded' : ''}`} key={`${question.id}-${index}`}><div className="generated-number">{String(index + 1).padStart(2, '0')}</div><div className="generated-body"><div className="generated-meta"><span>{question.category}</span><span className="ai-badge"><Sparkles size={11} /> ĐÃ KIỂM TRA</span></div><button className="generated-question-toggle" onClick={() => setExpandedQuestionId(isExpanded ? null : question.id)} aria-expanded={isExpanded}><h3>{question.prompt}</h3><ChevronDown size={18} /></button>{isExpanded && <><div className="generated-options">{question.options.map((option, optionIndex) => <div className={optionIndex === question.correctIndex ? 'generated-option generated-option--correct' : 'generated-option'} key={option}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}{optionIndex === question.correctIndex && <CheckCircle2 size={15} />}</div>)}</div><div className="generated-explanation"><strong>Giải thích:</strong> {question.explanation}</div></>}</div></article>})}</div></section>}
       </section>
     </main>
   )

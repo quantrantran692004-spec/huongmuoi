@@ -463,6 +463,10 @@
 }
 
 /* Generated questions stay compact until the learner opens one. */
+.generated-section {
+  scroll-margin-top: 24px;
+}
+
 .generated-question-toggle {
   display: flex;
   align-items: center;

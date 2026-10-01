@@ -4,7 +4,10 @@ import { AuthSession, SavedAttempt, SavedExam, cloudRequest, createShareUrl, get
 import {
   ArrowLeft,
   ArrowRight,
+  BarChart3,
   BookOpen,
+  BookOpenCheck,
+  CalendarDays,
   Check,
   CheckCircle2,
   ChevronLeft,
@@ -17,6 +20,7 @@ import {
   LockKeyhole,
   Maximize2,
   Minimize2,
+  Play,
   RotateCcw,
   Sparkles,
   TimerReset,
@@ -57,6 +61,8 @@ type History = {
   exams: SavedExam[]
   attempts: SavedAttempt[]
 }
+
+type HistoryTab = 'attempts' | 'exams'
 
 const EXAM_DURATION = 12 * 60
 const SESSION_KEY = 'examflow-session-v1'
@@ -210,6 +216,7 @@ function App() {
   const [authPassword, setAuthPassword] = useState('')
   const [authMessage, setAuthMessage] = useState('')
   const [history, setHistory] = useState<History | null>(null)
+  const [historyTab, setHistoryTab] = useState<HistoryTab>('attempts')
 
   const currentQuestion = questionSet[currentIndex]
   const answeredCount = Object.keys(answers).length
@@ -336,13 +343,37 @@ function App() {
 
   async function loadHistory() {
     if (!authSession) return setShowAuth(true)
-    try { setHistory(await cloudRequest<History>('/api/cloud/history', {}, authSession)) } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
+    try {
+      const payload = await cloudRequest<{ exams: Array<SavedExam & { updated_at?: string }>; attempts: Array<SavedAttempt & { exam_id?: string | null; completed_at?: string }> }>('/api/cloud/history', {}, authSession)
+      setHistory({
+        exams: payload.exams.map((exam) => ({ ...exam, updatedAt: exam.updatedAt || exam.updated_at || new Date().toISOString() })),
+        attempts: payload.attempts.map((attempt) => ({ ...attempt, examId: attempt.examId || attempt.exam_id || '', completedAt: attempt.completedAt || attempt.completed_at || '' })),
+      })
+      setHistoryTab('attempts')
+    } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
   }
 
   function formatHistoryDate(value: string) {
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return 'Thời gian không xác định'
     return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium', timeStyle: 'short' }).format(date)
+  }
+
+  function startSavedExam(exam: SavedExam) {
+    setHistory(null)
+    setQuestionSet(exam.questions.map((question) => ({ ...question })))
+    setExamTitle(exam.title)
+    setCurrentExamId(exam.id)
+    sessionStorage.removeItem(SESSION_KEY)
+    setAnswers({})
+    setMarked([])
+    setCurrentIndex(0)
+    setTimeLeft(EXAM_DURATION)
+    setResult(null)
+    setShowReview(false)
+    setWasAutoSubmitted(false)
+    setPhase('quiz')
+    void enterFullscreen()
   }
 
   function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
@@ -395,7 +426,7 @@ function App() {
         </section>
         <footer className="welcome-footer"><span>© 2024 huongmuoi</span><span>Thiết kế cho sự tập trung <span className="footer-symbol">✦</span></span></footer>
         {showAuth && <div className="dialog-backdrop" role="presentation" onClick={() => setShowAuth(false)}><div className="submit-dialog auth-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}><h2>{authMode === 'login' ? 'Đăng nhập huongmuoi' : 'Tạo tài khoản'}</h2><p>Chỉ tài khoản đã đăng nhập mới lưu bộ đề và lịch sử online trên nhiều thiết bị.</p><input className="auth-input" type="email" value={authEmail} onChange={(event) => setAuthEmail(event.target.value)} placeholder="Email" /><input className="auth-input" type="password" value={authPassword} onChange={(event) => setAuthPassword(event.target.value)} placeholder="Mật khẩu từ 6 ký tự" /><div className="dialog-actions"><button className="button button--ghost" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>{authMode === 'login' ? 'Tạo tài khoản' : 'Đã có tài khoản'}</button><button className="button button--primary" onClick={authenticate}>{authMode === 'login' ? 'Đăng nhập' : 'Đăng ký'}</button></div>{authMessage && <div className="builder-feedback">{authMessage}</div>}</div></div>}
-        {history && <div className="dialog-backdrop" role="presentation" onClick={() => setHistory(null)}><div className="submit-dialog history-dialog" role="dialog" aria-modal="true" aria-labelledby="history-title" onClick={(event) => event.stopPropagation()}><h2 id="history-title">Lịch sử của bạn</h2><p>{history.exams.length} bộ đề đã lưu · {history.attempts.length} lần làm bài online.</p><div className="history-list">{history.attempts.length ? history.attempts.slice(0, 8).map((attempt) => <article className="history-row" key={attempt.id}><div className="history-row-heading"><strong>{attempt.title}</strong><span>{formatHistoryDate(attempt.completedAt)}</span></div><div className="history-row-stats"><span className="history-score">{attempt.score}/100 điểm</span><span>{attempt.correct}/{attempt.total} câu đúng</span><span>{attempt.unanswered} câu chưa trả lời</span></div></article>) : <div className="history-empty">Bạn chưa có lần làm bài nào.</div>}</div><button className="button button--primary" onClick={() => setHistory(null)}>Đóng</button></div></div>}
+        {history && <div className="dialog-backdrop" role="presentation" onClick={() => setHistory(null)}><div className="submit-dialog history-dialog" role="dialog" aria-modal="true" aria-labelledby="history-title" onClick={(event) => event.stopPropagation()}><div className="history-dialog-header"><div><span className="card-kicker">KHÔNG GIAN CỦA BẠN</span><h2 id="history-title">Lịch sử học tập</h2><p>Theo dõi kết quả và tiếp tục các bộ đề đã lưu.</p></div><div className="history-dialog-icon"><BarChart3 size={21} /></div></div><div className="history-summary"><div><strong>{history.exams.length}</strong><span>BỘ ĐỀ ĐÃ LƯU</span></div><div><strong>{history.attempts.length}</strong><span>LẦN LÀM BÀI</span></div><div><strong>{history.attempts.length ? Math.round(history.attempts.reduce((sum, attempt) => sum + attempt.score, 0) / history.attempts.length) : '—'}</strong><span>ĐIỂM TRUNG BÌNH</span></div></div><div className="history-tabs" role="tablist"><button className={historyTab === 'attempts' ? 'history-tab history-tab--active' : 'history-tab'} role="tab" aria-selected={historyTab === 'attempts'} onClick={() => setHistoryTab('attempts')}><BarChart3 size={15} /> Kết quả gần đây <b>{history.attempts.length}</b></button><button className={historyTab === 'exams' ? 'history-tab history-tab--active' : 'history-tab'} role="tab" aria-selected={historyTab === 'exams'} onClick={() => setHistoryTab('exams')}><BookOpenCheck size={15} /> Bộ đề của tôi <b>{history.exams.length}</b></button></div><div className="history-list">{historyTab === 'attempts' ? (history.attempts.length ? history.attempts.slice(0, 8).map((attempt) => <article className="history-row" key={attempt.id}><div className="history-row-heading"><div><span className="history-row-kicker">KẾT QUẢ LÀM BÀI</span><strong>{attempt.title}</strong></div><span className="history-date"><CalendarDays size={13} /> {formatHistoryDate(attempt.completedAt)}</span></div><div className="history-row-stats"><span className="history-score">{attempt.score}/100 điểm</span><span>{attempt.correct}/{attempt.total} câu đúng</span><span>{attempt.unanswered} câu chưa trả lời</span></div><div className="history-row-actions">{attempt.examId ? <button className="history-action" onClick={() => { const exam = history.exams.find((item) => item.id === attempt.examId); if (exam) startSavedExam(exam); else setHistoryTab('exams') }}><Play size={13} /> Làm lại bộ đề</button> : <button className="history-action" onClick={() => { setHistory(null); startExam() }}><RotateCcw size={13} /> Làm lại bài mẫu</button>}</div></article>) : <div className="history-empty"><BarChart3 size={25} /><strong>Chưa có kết quả nào</strong><span>Hãy làm một bài thi để xem tiến bộ của bạn tại đây.</span></div>) : (history.exams.length ? history.exams.map((exam) => <article className="history-row" key={exam.id}><div className="history-row-heading"><div><span className="history-row-kicker">BỘ ĐỀ ĐÃ LƯU</span><strong>{exam.title}</strong></div><span className="history-date"><CalendarDays size={13} /> {formatHistoryDate(exam.updatedAt)}</span></div><div className="history-row-stats"><span>{exam.questions.length} câu hỏi</span><span>{new Set(exam.questions.map((question) => question.category)).size} chủ đề</span></div><div className="history-row-actions"><button className="history-action history-action--primary" onClick={() => startSavedExam(exam)}><Play size={13} /> Bắt đầu làm bài</button></div></article>) : <div className="history-empty"><BookOpenCheck size={25} /><strong>Chưa có bộ đề nào</strong><span>Tạo bộ đề đầu tiên từ tài liệu hoặc chủ đề của bạn.</span></div>)}</div><button className="button button--primary history-close" onClick={() => setHistory(null)}>Đóng</button></div></div>}
       </main>
     )
   }

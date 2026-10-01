@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import QuestionBuilder, { GeneratedQuestion } from './QuestionBuilder'
-import { AttemptReviewItem, AuthSession, SavedAttempt, SavedExam, cloudRequest, createShareUrl, getAuthSession, readSharedExam, saveAttempt, saveExam } from './platform'
+import { AttemptReviewItem, AuthSession, SavedAttempt, SavedExam, cloudRequest, createShareUrl, getAuthSession, getSavedAttempts, getSavedExams, readSharedExam, saveAttempt, saveExam } from './platform'
 import {
   ArrowLeft,
   ArrowRight,
@@ -373,9 +373,13 @@ function App() {
         session = refreshed
         payload = await cloudRequest<{ exams: Array<SavedExam & { updated_at?: string }>; attempts: Array<SavedAttempt & { exam_id?: string | null; completed_at?: string }> }>('/api/cloud/history', {}, session)
       }
+      const localExams = getSavedExams()
+      const localAttempts = getSavedAttempts()
+      const cloudExamIds = new Set(payload.exams.map((exam) => exam.id))
+      const cloudAttemptIds = new Set(payload.attempts.map((attempt) => attempt.id))
       setHistory({
-        exams: payload.exams.map((exam) => ({ ...exam, updatedAt: exam.updatedAt || exam.updated_at || new Date().toISOString() })),
-        attempts: payload.attempts.map((attempt) => ({ ...attempt, examId: attempt.examId || attempt.exam_id || '', completedAt: attempt.completedAt || attempt.completed_at || '' })),
+        exams: [...payload.exams, ...localExams.filter((exam) => !cloudExamIds.has(exam.id))].map((exam) => { const item = exam as SavedExam & { updated_at?: string }; return { ...item, updatedAt: item.updatedAt || item.updated_at || new Date().toISOString() } }).sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)),
+        attempts: [...payload.attempts, ...localAttempts.filter((attempt) => !cloudAttemptIds.has(attempt.id))].map((attempt) => { const item = attempt as SavedAttempt & { exam_id?: string | null; completed_at?: string }; return { ...item, examId: item.examId || item.exam_id || '', completedAt: item.completedAt || item.completed_at || '' } }).sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt)),
       })
       setHistoryTab('attempts')
     } catch (error) {
@@ -444,7 +448,7 @@ function App() {
             </button>
             <div className="welcome-trust"><CheckCircle2 size={16} /> Không cần đăng nhập · Tự động lưu trong phiên</div>
             <button className="builder-entry builder-entry--prominent" onClick={() => setPhase('builder')}><Sparkles size={15} /> Tạo bộ đề kiểm tra <ArrowRight size={14} /></button>
-            <div className="account-actions"><button className={authSession ? 'button button--ghost' : 'button button--ghost login-entry'} onClick={() => setShowAuth(true)}>{authSession ? `Đã đăng nhập: ${authSession.email || 'tài khoản'}` : 'Đăng nhập để lưu lịch sử online'}</button>{authSession && <button className="button button--secondary" onClick={loadHistory}>Xem lịch sử</button>}</div>
+            <div className="account-actions"><button className={authSession ? 'button button--ghost account-status account-status--signed-in' : 'button button--ghost login-entry account-status'} onClick={() => setShowAuth(true)} title={authSession?.email ? `Tài khoản: ${authSession.email}` : 'Chưa đăng nhập'}>{authSession ? <><CheckCircle2 size={15} /> Đã đăng nhập</> : <><LockKeyhole size={15} /> Chưa đăng nhập · Đăng nhập</>}</button>{authSession && <button className="button button--secondary" onClick={loadHistory}>Xem lịch sử</button>}</div>
           </div>
           <div className="welcome-card-wrap welcome-card-wrap--portrait">
             <div className="floating-label floating-label--top"><Sparkles size={14} /> Sẵn sàng chưa?</div>

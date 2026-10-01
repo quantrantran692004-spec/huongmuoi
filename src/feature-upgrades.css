@@ -365,6 +365,8 @@
 .builder-feedback--toast.builder-feedback--error::before { content: '!'; background: #b14d38; }
 .app-shell--welcome .account-status { white-space: nowrap; }
 .app-shell--welcome .account-status--signed-in { color: #31765f; border-color: #b8d8ca; background: #f0faf4; }
+.app-shell--welcome .welcome-copy h1 em::after { animation: sloganDrift 7s ease-in-out infinite; transform-origin: left center; }
+@keyframes sloganDrift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
 .app-shell--welcome .button,
 .app-shell--welcome .welcome-portrait-frame,
 .app-shell--welcome .welcome-portrait-frame img { will-change: transform; }

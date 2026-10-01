@@ -80,4 +80,16 @@ export function registerCloudRoutes(app) {
       res.json({ exams, attempts })
     } catch (error) { jsonError(res, error) }
   })
+
+  app.post('/api/cloud/delete-history', async (req, res) => {
+    try {
+      const token = authToken(req); userIdFromToken(token)
+      const kind = String(req.body?.kind || '')
+      const id = String(req.body?.id || '')
+      const table = kind === 'exam' ? 'exams' : kind === 'attempt' ? 'attempts' : ''
+      if (!table || !id) throw new Error('Mục lịch sử không hợp lệ.')
+      await supabase(`/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Prefer: 'return=minimal' } }, token)
+      res.json({ ok: true })
+    } catch (error) { jsonError(res, error) }
+  })
 }

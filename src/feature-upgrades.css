@@ -862,3 +862,129 @@
   .generated-heading { padding: 18px; }
   .generated-actions { justify-content: stretch; }
 }
+
+/* Temporary result notice: click the dimmed area to dismiss it. */
+.result-popover-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(42, 35, 40, .28);
+  backdrop-filter: blur(4px);
+}
+
+.result-popover {
+  width: min(100%, 390px);
+  padding: 30px 25px 24px;
+  color: var(--ink);
+  text-align: center;
+  background: rgba(255, 253, 250, .98);
+  border: 1px solid #ecd8dc;
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(67, 43, 53, .22);
+  animation: resultPopoverIn .28s ease-out both;
+}
+
+.result-popover-score {
+  color: var(--teal-deep);
+  font-size: 72px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -.08em;
+}
+
+.result-popover-caption {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+}
+
+.result-popover-message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.result-popover-message--success { color: #9b6e16; }
+.result-popover-message--needs-review { color: #b34d64; }
+
+.result-popover-sad-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  color: #b34d64;
+  background: #fff0d9;
+  border: 1px solid #efd09a;
+  border-radius: 50%;
+}
+
+.result-popover p {
+  margin: 17px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@keyframes resultPopoverIn {
+  from { opacity: 0; transform: translateY(12px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.history-action--delete {
+  color: #b34d64;
+  background: #fff1f3;
+  border-color: #efcbd2;
+}
+
+.history-action--delete:hover {
+  color: #fff;
+  background: #b34d64;
+  border-color: #b34d64;
+}
+
+/* Creation flow: stack source and AI instructions into one calm reading column. */
+.builder-grid {
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.builder-grid .source-card,
+.builder-grid .settings-card {
+  width: 100%;
+}
+
+.builder-grid .source-textarea {
+  min-height: 180px;
+}
+
+.builder-grid .settings-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: start;
+}
+
+.builder-grid .settings-card .builder-card-heading,
+.builder-grid .settings-card .ai-note,
+.builder-grid .settings-card .button--generate {
+  grid-column: 1 / -1;
+}
+
+.builder-grid .settings-card .builder-card-heading { width: 100%; }
+.builder-grid .settings-card .field-row { grid-column: 1 / -1; width: min(100%, 620px); }
+.builder-grid .settings-card .button--generate { width: min(100%, 520px); justify-self: start; }
+
+@media (max-width: 780px) {
+  .builder-grid .settings-card { display: flex; }
+  .builder-grid .settings-card .button--generate { width: 100%; }
+}

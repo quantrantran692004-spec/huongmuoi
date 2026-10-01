@@ -61,6 +61,8 @@ export function saveAttempt(attempt: Omit<SavedAttempt, 'id' | 'completedAt'>) {
   write(ATTEMPTS_KEY, [next, ...getSavedAttempts()].slice(0, 100))
   return next
 }
+export function removeSavedExam(examId: string) { write(EXAMS_KEY, getSavedExams().filter((exam) => exam.id !== examId)) }
+export function removeSavedAttempt(attemptId: string) { write(ATTEMPTS_KEY, getSavedAttempts().filter((attempt) => attempt.id !== attemptId)) }
 export function removeLocalHistory() { localStorage.removeItem(EXAMS_KEY); localStorage.removeItem(ATTEMPTS_KEY) }
 
 export type AuthSession = { accessToken: string; refreshToken?: string; email?: string; userId?: string }

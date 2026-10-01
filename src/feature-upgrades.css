@@ -1624,3 +1624,194 @@
 .builder-grid .settings-card {
   background: linear-gradient(145deg, rgba(255, 255, 255, .82), rgba(255, 249, 247, .72));
 }
+
+/* Fit Step 02 cleanly inside the equal-height panel. */
+.builder-grid .settings-card .builder-card-heading h2 {
+  font-size: 22px;
+}
+
+.builder-grid .settings-card .field-label {
+  font-size: 12px;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.builder-grid .settings-card .field-label > span {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.builder-grid .settings-card .field-label input,
+.builder-grid .settings-card .field-label select {
+  min-height: 42px;
+  font-size: 13px;
+}
+
+.builder-grid .settings-card .instruction-field textarea {
+  min-height: 82px;
+  padding: 11px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.builder-grid .settings-card .ai-note {
+  gap: 9px;
+  margin-top: 15px;
+  padding: 11px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.builder-grid .settings-card .ai-note strong {
+  font-size: 10px;
+}
+
+.builder-grid .settings-card .button--generate {
+  min-height: 48px;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+@media (max-width: 780px) {
+  .builder-grid .settings-card .field-label { font-size: 13px; }
+  .builder-grid .settings-card .field-label input,
+  .builder-grid .settings-card .field-label select,
+  .builder-grid .settings-card .instruction-field textarea { font-size: 14px; }
+}
+
+/* Final overflow fix for the equal-height Step 02 panel. */
+.builder-grid .settings-card {
+  padding: 20px;
+  overflow: hidden;
+}
+
+.builder-grid .settings-card .builder-card-heading {
+  margin-bottom: 12px;
+}
+
+.builder-grid .settings-card .field-label {
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.builder-grid .settings-card .field-label input,
+.builder-grid .settings-card .field-label select {
+  min-height: 36px;
+  padding: 0 9px;
+}
+
+.builder-grid .settings-card .instruction-field textarea {
+  min-height: 68px;
+  padding: 9px;
+}
+
+.builder-grid .settings-card .ai-note {
+  gap: 7px;
+  margin-top: 9px;
+  padding: 8px 9px;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.builder-grid .settings-card .ai-note strong {
+  font-size: 9px;
+}
+
+.builder-grid .settings-card .button--generate {
+  min-height: 42px;
+  margin-top: 8px;
+}
+
+/* Refined Step 02 composition: one clear reading rhythm from request to CTA. */
+.builder-grid .settings-card .builder-card-heading {
+  margin-bottom: 16px;
+}
+
+.builder-grid .settings-card > .field-label:first-of-type {
+  margin-top: 4px;
+}
+
+.builder-grid .settings-card .instruction-field {
+  margin-top: 13px;
+  padding: 10px 11px 11px;
+  background: rgba(255, 248, 247, .62);
+  border: 1px solid rgba(223, 184, 190, .56);
+  border-radius: 10px;
+}
+
+.builder-grid .settings-card .instruction-field > span {
+  color: #b34d64;
+}
+
+.builder-grid .settings-card .instruction-field textarea {
+  min-height: 78px;
+  background: rgba(255, 255, 255, .84);
+  border-color: rgba(223, 184, 190, .66);
+}
+
+.builder-grid .settings-card .field-row {
+  gap: 13px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(220, 226, 220, .7);
+}
+
+.builder-grid .settings-card .field-row .field-label {
+  margin-top: 0;
+}
+
+.builder-grid .settings-card .ai-note {
+  min-height: 43px;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding: 9px 10px;
+  border-radius: 9px;
+}
+
+.builder-grid .settings-card .button--generate {
+  min-height: 46px;
+  margin-top: 11px;
+  border-radius: 10px;
+}
+
+/* Keep the note and CTA inside the equal-height Step 02 card. */
+.builder-grid .settings-card .builder-card-heading {
+  margin-bottom: 10px;
+}
+
+.builder-grid .settings-card > .field-label:first-of-type {
+  margin-top: 2px;
+}
+
+.builder-grid .settings-card .instruction-field {
+  margin-top: 9px;
+  padding: 8px 10px 9px;
+}
+
+.builder-grid .settings-card .instruction-field textarea {
+  min-height: 62px;
+}
+
+.builder-grid .settings-card .field-row {
+  gap: 11px;
+  margin-top: 8px;
+  padding-top: 7px;
+}
+
+.builder-grid .settings-card .ai-note {
+  min-height: 34px;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 8px;
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.builder-grid .settings-card .ai-note strong {
+  font-size: 8px;
+}
+
+.builder-grid .settings-card .button--generate {
+  min-height: 40px;
+  margin-top: 5px;
+}

@@ -48,6 +48,12 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
     return () => window.clearTimeout(scrollTimer)
   }, [questions.length])
 
+  useEffect(() => {
+    if (!notice) return
+    const noticeTimer = window.setTimeout(() => setNotice(''), 4500)
+    return () => window.clearTimeout(noticeTimer)
+  }, [notice])
+
   function clearFeedback() {
     setError('')
     setNotice('')

@@ -485,14 +485,15 @@ function App() {
           <div className="topbar-right"><span className="session-pill"><CheckCircle2 size={15} /> Đã hoàn thành</span><button className="icon-button" aria-label="Trợ giúp"><HelpCircle size={20} /></button></div>
         </header>
         <section className="result-page">
-          {result.score >= 80 && <div className="fireworks" aria-hidden="true"><span /><span /><span /><span /><span /><span /><span /><span /></div>}
+          {result.score >= 80 && <div className="fireworks" aria-hidden="true"><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /></div>}
           <div className="result-heading"><div className="eyebrow"><span className="eyebrow-dot" /> KẾT QUẢ PHIÊN LÀM BÀI</div><h1>{wasAutoSubmitted ? 'Hết giờ — bài đã được nộp.' : 'Bài thi đã được nộp.'}</h1><p>{wasAutoSubmitted ? 'Thời gian đã về 00:00 nên hệ thống tự động khóa bài và chấm điểm.' : 'Đây là bản tóm tắt nhanh để bạn biết điểm mạnh và bước tiếp theo.'}</p></div>
-          <div className="result-grid">
-            <section className="score-card">
+          <section className="result-spotlight">
               <div className="score-ring" style={{ '--score': `${result.score * 3.6}deg` } as React.CSSProperties}><div className="score-ring-inner"><strong>{result.score}</strong><span>/ 100</span></div></div>
               <div className="score-caption">ĐIỂM TỔNG</div>
               <div className={`score-message ${result.score >= 80 ? 'score-message--success' : 'score-message--needs-review'}`}>{result.score >= 80 ? <><Trophy size={18} /> Nền tảng vững vàng</> : <><span className="score-message-icon" role="img" aria-label="Mặt buồn, cần ôn lại"><Frown size={25} strokeWidth={2.2} /></span><span>Bạn quá kém, cần ôn lại rồi</span></>}</div>
-            </section>
+              <p className="result-spotlight-note">{result.score >= 80 ? 'Bạn đã hoàn thành tốt bài thi. Hãy tiếp tục giữ nhịp học này nhé.' : 'Hãy xem lại phần tổng kết và ôn lại những câu còn sai để tiến bộ hơn.'}</p>
+          </section>
+          <div className="result-grid">
             <section className="result-detail-card">
               <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(EXAM_DURATION - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>
               <div className="card-divider" />

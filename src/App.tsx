@@ -246,6 +246,10 @@ function App() {
   }, [phase, timeLeft])
 
   useEffect(() => {
+    if (phase === 'result') window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [phase])
+
+  useEffect(() => {
     const syncFullscreenState = () => setIsFullscreen(Boolean(document.fullscreenElement))
     document.addEventListener('fullscreenchange', syncFullscreenState)
     return () => document.removeEventListener('fullscreenchange', syncFullscreenState)
@@ -311,7 +315,7 @@ function App() {
     setShowSubmitDialog(false)
     sessionStorage.removeItem(SESSION_KEY)
     setPhase('result')
-    setShowReview(true)
+    setShowReview(false)
     setWasAutoSubmitted(autoSubmitted)
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined)
   }
@@ -487,7 +491,7 @@ function App() {
             <section className="score-card">
               <div className="score-ring" style={{ '--score': `${result.score * 3.6}deg` } as React.CSSProperties}><div className="score-ring-inner"><strong>{result.score}</strong><span>/ 100</span></div></div>
               <div className="score-caption">ĐIỂM TỔNG</div>
-              <div className={`score-message ${result.score >= 80 ? 'score-message--success' : 'score-message--needs-review'}`}>{result.score >= 80 ? <><Trophy size={18} /> Nền tảng vững vàng</> : <><Frown size={20} /> Bạn quá kém, cần ôn lại rồi</>}</div>
+              <div className={`score-message ${result.score >= 80 ? 'score-message--success' : 'score-message--needs-review'}`}>{result.score >= 80 ? <><Trophy size={18} /> Nền tảng vững vàng</> : <><span className="score-message-icon" role="img" aria-label="Mặt buồn, cần ôn lại"><Frown size={25} strokeWidth={2.2} /></span><span>Bạn quá kém, cần ôn lại rồi</span></>}</div>
             </section>
             <section className="result-detail-card">
               <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(EXAM_DURATION - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>

@@ -569,15 +569,163 @@
 }
 
 .score-message--needs-review {
+  align-items: center;
   color: #b34d64;
+  gap: 9px;
+  max-width: 230px;
+  text-align: center;
 }
 
 .score-message--needs-review svg {
   color: #d5a83c;
 }
 
+.score-message-icon {
+  display: grid;
+  flex: 0 0 36px;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #b34d64;
+  background: #fff2d9;
+  border: 1px solid #efd39a;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(179, 77, 100, .12);
+}
+
+/* Readable exam typography: use the same Vietnamese-friendly sans font everywhere. */
+.app-shell--quiz .question-heading h1,
+.app-shell--quiz .question-heading p,
+.app-shell--quiz .option-text {
+  font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+.app-shell--quiz .question-heading h1 {
+  font-weight: 750;
+  letter-spacing: -.025em;
+}
+
+.app-shell--quiz .option-text {
+  min-width: 0;
+  color: #26343b;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.app-shell--quiz .option-letter {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-weight: 600;
+}
+
+@media (max-width: 680px) {
+  .app-shell--quiz .question-heading h1 { font-size: 29px; line-height: 1.28; }
+  .app-shell--quiz .option-text { font-size: 15px; line-height: 1.55; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .generated-question-toggle svg,
   .fireworks span { animation: none; transition: none; }
   .fireworks { display: none; }
+}
+
+/* Builder readability: give both steps enough space and a clearer hierarchy. */
+.builder-page {
+  width: min(1180px, calc(100% - 64px));
+  padding-top: 58px;
+}
+
+.builder-heading > p {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.builder-grid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+  gap: 24px;
+  margin-top: 42px;
+}
+
+.builder-card {
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(31, 92, 92, .055);
+}
+
+.builder-card-heading {
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.builder-card-heading h2 {
+  font-size: 21px;
+}
+
+.source-tabs {
+  gap: 9px;
+  padding-bottom: 14px;
+}
+
+.source-tab {
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.source-textarea,
+.file-drop {
+  min-height: 225px;
+}
+
+.source-textarea {
+  padding: 17px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.field-label {
+  gap: 8px;
+  margin-top: 19px;
+  font-size: 11px;
+}
+
+.field-label > span {
+  font-size: 10px;
+}
+
+.field-label input,
+.field-label select {
+  min-height: 46px;
+  padding-inline: 13px;
+  font-size: 13px;
+}
+
+.instruction-field textarea {
+  min-height: 100px;
+  padding: 13px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ai-note {
+  gap: 12px;
+  margin-top: 25px;
+  padding: 15px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.button--generate {
+  min-height: 52px;
+  margin-top: 25px;
+  font-size: 13px;
+}
+
+@media (max-width: 780px) {
+  .builder-page { width: calc(100% - 40px); padding-top: 38px; }
+  .builder-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 30px; }
+  .builder-card { padding: 23px; }
+  .source-textarea,
+  .file-drop { min-height: 190px; }
 }

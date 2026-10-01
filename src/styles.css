@@ -2551,3 +2551,10 @@ body {
   justify-self: center;
   margin: auto;
 }
+
+/* User instructions for focused question generation */
+.instruction-field { margin-top: 17px; }
+.instruction-field textarea { width: 100%; min-height: 76px; padding: 11px; color: var(--ink); background: #fbfcfa; border: 1px solid #dce4dd; border-radius: 4px; outline: 0; resize: vertical; font: inherit; font-size: 11px; font-weight: 600; line-height: 1.5; }
+.instruction-field textarea:focus { border-color: #8dbab0; box-shadow: 0 0 0 3px rgba(31,92,92,.08); }
+.instruction-field textarea::placeholder { color: #a6b0aa; font-weight: 500; }
+.instruction-field > span { max-width: 300px; line-height: 1.35; }

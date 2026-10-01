@@ -411,7 +411,7 @@ function App() {
       <main className="app-shell app-shell--welcome">
         <header className="topbar topbar--welcome">
           <AppLogo />
-          <div className="topbar-note"><LockKeyhole size={15} /> Phiên làm bài riêng tư</div>
+          <div className="topbar-note"><BookOpen size={15} /> Học cùng nhau, tiến xa hơn</div>
         </header>
         <section className="welcome-layout">
           <div className="welcome-copy">
@@ -422,7 +422,7 @@ function App() {
               Bắt đầu bài thi mẫu <ArrowRight size={18} />
             </button>
             <div className="welcome-trust"><CheckCircle2 size={16} /> Không cần đăng nhập · Tự động lưu trong phiên</div>
-            <button className="builder-entry" onClick={() => setPhase('builder')}><Sparkles size={15} /> Tạo bộ đề kiểm tra <ArrowRight size={14} /></button>
+            <button className="builder-entry builder-entry--prominent" onClick={() => setPhase('builder')}><Sparkles size={15} /> Tạo bộ đề kiểm tra <ArrowRight size={14} /></button>
             <div className="account-actions"><button className={authSession ? 'button button--ghost' : 'button button--ghost login-entry'} onClick={() => setShowAuth(true)}>{authSession ? `Đã đăng nhập: ${authSession.email || 'tài khoản'}` : 'Đăng nhập để lưu lịch sử online'}</button>{authSession && <button className="button button--secondary" onClick={loadHistory}>Xem lịch sử</button>}</div>
           </div>
           <div className="welcome-card-wrap welcome-card-wrap--portrait">

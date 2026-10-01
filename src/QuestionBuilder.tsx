@@ -1,5 +1,5 @@
 import { ChangeEvent, useMemo, useState } from 'react'
-import { ArrowLeft, CheckCircle2, Download, FileText, Globe2, LoaderCircle, Sparkles, Upload, WandSparkles } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ChevronDown, Download, FileText, Globe2, LoaderCircle, Sparkles, Upload, WandSparkles } from 'lucide-react'
 
 export type GeneratedQuestion = {
   id: number
@@ -34,6 +34,7 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
   const [count, setCount] = useState('10')
   const [difficulty, setDifficulty] = useState('Vừa')
   const [questions, setQuestions] = useState<GeneratedQuestion[]>([])
+  const [expandedQuestionId, setExpandedQuestionId] = useState<number | null>(null)
   const [loading, setLoading] = useState<'extract' | 'scrape' | 'generate' | 'export' | null>(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -87,6 +88,7 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
     try {
       const payload = await readJson(await fetch('/api/generate-questions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceText, topic, instructions, count: Number(count), difficulty }) }))
       setQuestions(payload.questions)
+      setExpandedQuestionId(null)
       const modelLabel = Array.isArray(payload.models) ? payload.models.join(' → ') : payload.model
    setNotice(`Đã tạo bộ đề thành công! (${payload.questions.length} câu hỏi)${payload.qualityChecked ? ' · Đã kiểm định đáp án' : ''}`)
 
@@ -152,7 +154,7 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
           </section>
         </div>
         {(error || notice) && <div className={error ? 'builder-feedback builder-feedback--error builder-feedback--toast' : 'builder-feedback builder-feedback--toast'} role="status" aria-live="polite">{error || notice}</div>}
-        {questions.length > 0 && <section className="generated-section"><div className="generated-heading"><div><span className="card-kicker">BƯỚC 03 · ĐÃ TẠO</span><h2>Bộ câu hỏi của bạn <span>{questions.length}</span></h2><p>Kiểm tra nhanh nội dung trước khi dùng hoặc xuất thành file Word.</p></div><div className="generated-actions"><button className="button button--primary" onClick={() => exportDocx(true)} disabled={loading === 'export'}><Download size={16} /> Xuất có đáp án</button><button className="button button--secondary" onClick={() => exportDocx(false)} disabled={loading === 'export'}>{loading === 'export' ? <LoaderCircle className="spin" size={16} /> : <Download size={16} />} Xuất đề trống</button><button className="button button--secondary" onClick={() => onShareExam?.(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Chia sẻ link</button><button className="button button--primary" onClick={() => onStartExam(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Dùng để làm bài <Sparkles size={16} /></button></div></div><div className="generated-list">{questions.map((question, index) => <article className="generated-question" key={`${question.id}-${index}`}><div className="generated-number">{String(index + 1).padStart(2, '0')}</div><div className="generated-body"><div className="generated-meta"><span>{question.category}</span><span className="ai-badge"><Sparkles size={11} /> ĐÃ KIỂM TRA</span></div><h3>{question.prompt}</h3><div className="generated-options">{question.options.map((option, optionIndex) => <div className={optionIndex === question.correctIndex ? 'generated-option generated-option--correct' : 'generated-option'} key={option}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}{optionIndex === question.correctIndex && <CheckCircle2 size={15} />}</div>)}</div><div className="generated-explanation"><strong>Giải thích:</strong> {question.explanation}</div></div></article>)}</div></section>}
+        {questions.length > 0 && <section className="generated-section"><div className="generated-heading"><div><span className="card-kicker">BƯỚC 03 · ĐÃ TẠO</span><h2>Bộ câu hỏi của bạn <span>{questions.length}</span></h2><p>Kiểm tra nhanh nội dung trước khi dùng hoặc xuất thành file Word.</p></div><div className="generated-actions"><button className="button button--primary" onClick={() => exportDocx(true)} disabled={loading === 'export'}><Download size={16} /> Xuất có đáp án</button><button className="button button--secondary" onClick={() => exportDocx(false)} disabled={loading === 'export'}>{loading === 'export' ? <LoaderCircle className="spin" size={16} /> : <Download size={16} />} Xuất đề trống</button><button className="button button--secondary" onClick={() => onShareExam?.(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Chia sẻ link</button><button className="button button--primary" onClick={() => onStartExam(questions, `Bộ Đề Thi: ${topic.trim() || sourceLabel}`)}>Dùng để làm bài <Sparkles size={16} /></button></div></div><div className="generated-list">{questions.map((question, index) => { const isExpanded = expandedQuestionId === question.id; return <article className={`generated-question ${isExpanded ? 'generated-question--expanded' : ''}`} key={`${question.id}-${index}`}><div className="generated-number">{String(index + 1).padStart(2, '0')}</div><div className="generated-body"><div className="generated-meta"><span>{question.category}</span><span className="ai-badge"><Sparkles size={11} /> ĐÃ KIỂM TRA</span></div><button className="generated-question-toggle" onClick={() => setExpandedQuestionId(isExpanded ? null : question.id)} aria-expanded={isExpanded}><h3>{question.prompt}</h3><ChevronDown size={18} /></button>{isExpanded && <><div className="generated-options">{question.options.map((option, optionIndex) => <div className={optionIndex === question.correctIndex ? 'generated-option generated-option--correct' : 'generated-option'} key={option}><span>{String.fromCharCode(65 + optionIndex)}</span>{option}{optionIndex === question.correctIndex && <CheckCircle2 size={15} />}</div>)}</div><div className="generated-explanation"><strong>Giải thích:</strong> {question.explanation}</div></>}</div></article>})}</div></section>}
       </section>
     </main>
   )

@@ -461,3 +461,119 @@
   .floating-heart,
   .floating-leaf { animation: none; }
 }
+
+/* Generated questions stay compact until the learner opens one. */
+.generated-question-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.generated-question-toggle h3 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 9px 0 0;
+}
+
+.generated-question-toggle svg {
+  flex: 0 0 auto;
+  margin-top: 9px;
+  color: var(--teal);
+  transition: transform .2s ease;
+}
+
+.generated-question--expanded .generated-question-toggle svg {
+  transform: rotate(180deg);
+}
+
+.generated-question:not(.generated-question--expanded) {
+  padding-block: 15px;
+}
+
+.generated-question-toggle:focus-visible {
+  outline: 3px solid rgba(232, 111, 81, .35);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+/* Celebration for scores of 80/100 or higher. */
+.result-page--celebration .result-page {
+  position: relative;
+}
+
+.result-page--celebration .score-card {
+  position: relative;
+  z-index: 2;
+}
+
+.fireworks {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fireworks span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: fireworkBurst 2.8s ease-out infinite;
+}
+
+.fireworks span::before,
+.fireworks span::after {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e7b65f;
+  box-shadow: 0 -42px 0 #d9687d, 30px -30px 0 #b2607b, 42px 0 0 #e7b65f, 30px 30px 0 #d9687d, 0 42px 0 #b2607b, -30px 30px 0 #e7b65f, -42px 0 0 #d9687d, -30px -30px 0 #b2607b;
+  content: '';
+}
+
+.fireworks span::after {
+  transform: rotate(22deg) scale(.65);
+  background: #d995a3;
+  box-shadow: 0 -35px 0 #e7b65f, 25px -25px 0 #d9687d, 35px 0 0 #b2607b, 25px 25px 0 #e7b65f, 0 35px 0 #d9687d, -25px 25px 0 #b2607b, -35px 0 0 #e7b65f, -25px -25px 0 #d9687d;
+}
+
+.fireworks span:nth-child(1) { top: 14%; left: 17%; animation-delay: 0s; }
+.fireworks span:nth-child(2) { top: 20%; left: 81%; animation-delay: .45s; transform: scale(.8); }
+.fireworks span:nth-child(3) { top: 42%; left: 54%; animation-delay: .9s; transform: scale(.7); }
+.fireworks span:nth-child(4) { top: 56%; left: 9%; animation-delay: 1.3s; transform: scale(.65); }
+.fireworks span:nth-child(5) { top: 67%; left: 89%; animation-delay: 1.7s; transform: scale(.75); }
+.fireworks span:nth-child(6) { top: 78%; left: 34%; animation-delay: 2.1s; transform: scale(.6); }
+.fireworks span:nth-child(7) { top: 31%; left: 38%; animation-delay: 2.45s; transform: scale(.55); }
+.fireworks span:nth-child(8) { top: 83%; left: 67%; animation-delay: 2.7s; transform: scale(.7); }
+
+@keyframes fireworkBurst {
+  0% { opacity: 0; transform: scale(.15); }
+  18% { opacity: .9; }
+  65% { opacity: .65; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+.score-message--needs-review {
+  color: #b34d64;
+}
+
+.score-message--needs-review svg {
+  color: #d5a83c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .generated-question-toggle svg,
+  .fireworks span { animation: none; transition: none; }
+  .fireworks { display: none; }
+}

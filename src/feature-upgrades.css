@@ -157,6 +157,13 @@
 .footer-contact p { display: flex; flex-direction: column; gap: 1px; margin-top: 5px; }
 .footer-contact p span { color: #b28d97; font-size: 9px; }
 .footer-contact p strong { color: #6f5360; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.footer-email { display: inline-flex; align-items: center; gap: 4px; width: fit-content; color: #6f5360; font-size: 10px; font-weight: 700; text-decoration: none; transition: color .2s; }
+.footer-email:hover { color: #a4516d; }
+.footer-socials { display: flex; gap: 7px; margin-top: 10px; }
+.footer-social { display: inline-flex; align-items: center; gap: 4px; padding: 5px 7px; color: #896e78; background: rgba(255, 255, 255, .58); border: 1px solid #ead4da; border-radius: 7px; font: inherit; font-size: 9px; cursor: not-allowed; }
+.footer-social b { display: grid; width: 15px; height: 15px; place-items: center; color: #fff; background: #bd7185; border-radius: 50%; font-size: 10px; }
+.footer-social--facebook b { background: #6d83ad; }
+.footer-social--tiktok b { background: #6b8f8b; }
 .footer-nav { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .footer-nav button { padding: 0; color: #8d747c; background: transparent; border: 0; cursor: pointer; font-size: 10px; transition: color .2s, transform .2s; }
 .footer-nav button:hover { color: #a4516d; transform: translateX(3px); }

@@ -1460,3 +1460,167 @@
   .builder-grid .source-textarea,
   .builder-grid .instruction-field textarea { font-size: 14px; }
 }
+
+/* Final builder card composition: two elongated asymmetric panels. */
+.builder-heading h1 em::after {
+  display: none;
+}
+
+.builder-heading > p {
+  position: relative;
+  z-index: 3;
+  max-width: 720px;
+  margin-top: 14px;
+  padding: 0;
+  color: #665d61;
+  font-size: 15px;
+  line-height: 1.75;
+  background: transparent;
+}
+
+.builder-grid {
+  align-items: start;
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, .92fr);
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.builder-grid .builder-card {
+  height: auto;
+  min-height: 0;
+  border-radius: 24px 10px 24px 10px;
+}
+
+.builder-grid .source-card {
+  min-height: 500px;
+  border-top-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.builder-grid .settings-card {
+  min-height: 432px;
+  margin-top: 34px;
+  border-top-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.builder-grid .builder-card::before {
+  height: 7px;
+}
+
+.builder-grid .source-card::after,
+.builder-grid .settings-card::after {
+  position: absolute;
+  right: 24px;
+  bottom: 16px;
+  left: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(31, 92, 92, .16), transparent);
+  content: '';
+}
+
+.builder-grid .settings-card::after {
+  background: linear-gradient(90deg, transparent, rgba(217, 104, 125, .2), transparent);
+}
+
+.builder-grid .source-textarea,
+.builder-grid .file-drop {
+  min-height: 260px;
+}
+
+.builder-grid .settings-card .button--generate {
+  margin-top: auto;
+}
+
+@media (max-width: 900px) {
+  .builder-grid { grid-template-columns: minmax(0, 1fr) minmax(330px, .92fr); }
+  .builder-grid .source-card { min-height: 470px; }
+  .builder-grid .settings-card { min-height: 420px; }
+}
+
+@media (max-width: 780px) {
+  .builder-grid { grid-template-columns: 1fr; }
+  .builder-grid .source-card,
+  .builder-grid .settings-card { min-height: 0; margin-top: 0; }
+  .builder-grid .source-textarea,
+  .builder-grid .file-drop { min-height: 200px; }
+}
+
+/* Both workflow panels intentionally share one balanced height. */
+.builder-grid {
+  align-items: stretch;
+}
+
+.builder-grid .source-card,
+.builder-grid .settings-card {
+  height: 500px;
+  min-height: 500px;
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .builder-grid .source-card,
+  .builder-grid .settings-card {
+    height: 500px;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 780px) {
+  .builder-grid { align-items: start; }
+  .builder-grid .source-card,
+  .builder-grid .settings-card {
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* Expand the two equal panels to use the banner width efficiently. */
+.builder-page {
+  width: min(1320px, calc(100% - 36px));
+}
+
+.builder-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.builder-grid .source-card,
+.builder-grid .settings-card {
+  width: 100%;
+}
+
+@media (max-width: 780px) {
+  .builder-page { width: calc(100% - 28px); }
+  .builder-grid { grid-template-columns: 1fr; }
+}
+
+/* Soften panel separation while preserving the rounded two-step structure. */
+.builder-grid .builder-card {
+  background: rgba(255, 255, 255, .78);
+  border-color: rgba(210, 216, 210, .56);
+  box-shadow: 0 9px 24px rgba(54, 67, 61, .045), inset 0 1px 0 rgba(255, 255, 255, .72);
+  backdrop-filter: blur(5px);
+}
+
+.builder-grid .builder-card::before {
+  height: 4px;
+  opacity: .48;
+}
+
+.builder-grid .builder-card-heading {
+  border-bottom-color: rgba(220, 226, 220, .66);
+}
+
+.builder-grid .source-card::after,
+.builder-grid .settings-card::after {
+  opacity: .45;
+}
+
+.builder-grid .source-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, .82), rgba(247, 252, 248, .72));
+}
+
+.builder-grid .settings-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, .82), rgba(255, 249, 247, .72));
+}

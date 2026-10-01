@@ -146,10 +146,10 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
       <header className="builder-topbar">
         <button className="back-link" onClick={onBack}><ArrowLeft size={17} /> Về trang chính</button>
         <div className="builder-brand"><span className="builder-brand-mark"><Sparkles size={15} /></span><span>TẠO BỘ ĐỀ KIỂM TRA</span></div>
-        <div className="builder-status"><span className="status-dot" /> GROQ CONNECTED</div>
+        <div className="builder-status"><span className="status-dot" /> SẴN SÀNG TẠO ĐỀ</div>
       </header>
       <section className="builder-page">
-        <div className="builder-heading"><div className="eyebrow"><span className="eyebrow-dot" /> TẠO BỘ CÂU HỎI CHO BẠN</div><h1>Biến ý tưởng thành<br /><em>một bài thi rõ ràng.</em></h1><p>Dùng file học tập, nội dung bạn dán hoặc một trang web công khai. Không có tài liệu cũng được — chỉ cần nhập chủ đề, Groq sẽ tự xây dựng câu hỏi có đáp án và giải thích.</p></div>
+        <div className="builder-heading"><div className="eyebrow"><span className="eyebrow-dot" /> TẠO BỘ CÂU HỎI CHO BẠN</div><h1>Biến ý tưởng thành<br /><em>một bài thi rõ ràng.</em></h1><p>Dùng tài liệu học tập hoặc nội dung bạn dán để tạo bộ câu hỏi theo yêu cầu. Bạn cũng có thể bắt đầu từ một chủ đề và chọn số câu, độ khó phù hợp.</p></div>
         <div className="builder-grid">
           <section className="source-card builder-card">
             <div className="builder-card-heading"><div><span className="card-kicker">BƯỚC 01</span><h2>Chọn nguồn nội dung</h2></div><FileText size={20} /></div>

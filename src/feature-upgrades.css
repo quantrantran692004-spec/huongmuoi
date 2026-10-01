@@ -243,17 +243,17 @@
 }
 
 /* Laptop fit: keep the complete hero composition visible on 768–850px tall screens. */
-@media (min-width: 761px) and (max-height: 1200px) {
-  .app-shell--welcome { height: auto; min-height: 0; overflow: visible; }
+@media (min-width: 761px) {
+  .app-shell--welcome { height: 100vh; min-height: 0; overflow: hidden; }
   .app-shell--welcome .topbar { height: 58px; min-height: 58px; }
-  .app-shell--welcome .welcome-layout { flex: 0 0 clamp(560px, calc(100vh - 540px), 640px); height: auto; min-height: 0; margin: 0 auto; align-items: start; }
-  .app-shell--welcome .welcome-copy { padding-top: 32px; }
+  .app-shell--welcome .welcome-layout { flex: 1 1 auto; height: auto; min-height: 0; margin: 0 auto; align-items: center; }
+  .app-shell--welcome .welcome-copy { padding-top: 0; align-self: center; }
   .app-shell--welcome .welcome-copy h1 { margin-top: 10px; margin-bottom: 14px; font-size: clamp(36px, 4.35vw, 54px); line-height: 1.02; }
   .app-shell--welcome .welcome-copy h1 em { margin-top: 10px; line-height: 1.04; }
   .app-shell--welcome .welcome-lede { margin-bottom: 14px; font-size: 15px; }
   .app-shell--welcome .welcome-trust { margin-top: 10px; }
   .app-shell--welcome .account-actions { margin-top: 10px; }
-  .app-shell--welcome .welcome-card-wrap--portrait { align-self: start; height: min(52vh, 460px); min-height: 0; margin-top: 20px; }
+  .app-shell--welcome .welcome-card-wrap--portrait { align-self: center; height: min(52vh, 430px); min-height: 300px; margin-top: 0; }
   .app-shell--welcome .portrait-caption { bottom: -70px; }
   .app-shell--welcome .welcome-footer { flex: 0 0 auto; margin-top: 0; padding-top: 10px; padding-bottom: 4px; }
   .footer-brand p, .footer-column p { line-height: 1.2; }

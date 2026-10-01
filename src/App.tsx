@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import QuestionBuilder, { GeneratedQuestion } from './QuestionBuilder'
+import { AuthSession, cloudRequest, createShareUrl, getAuthSession, readSharedExam, saveAttempt, saveExam } from './platform'
 import {
   ArrowLeft,
   ArrowRight,
@@ -182,9 +183,10 @@ function AppLogo({ compact = false }: { compact?: boolean }) {
 
 function App() {
   const restored = useMemo(() => loadSession(), [])
-  const [phase, setPhase] = useState<Phase>(restored ? 'quiz' : 'welcome')
-  const [examTitle, setExamTitle] = useState(restored?.examTitle || 'Bài thi mẫu · Nền tảng Web')
-  const [questionSet, setQuestionSet] = useState<Question[]>(QUESTIONS)
+  const shared = useMemo(() => readSharedExam(), [])
+  const [phase, setPhase] = useState<Phase>(restored || shared ? 'quiz' : 'welcome')
+  const [examTitle, setExamTitle] = useState(restored?.examTitle || shared?.title || 'Bài thi mẫu · Nền tảng Web')
+  const [questionSet, setQuestionSet] = useState<Question[]>(shared?.questions?.map((question) => ({ ...question })) || QUESTIONS)
   const [currentIndex, setCurrentIndex] = useState(restored?.currentIndex ?? 0)
   const [answers, setAnswers] = useState<Answers>(restored?.answers ?? {})
   const [marked, setMarked] = useState<number[]>(restored?.marked ?? [])
@@ -195,6 +197,14 @@ function App() {
   const [isExporting, setIsExporting] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [wasAutoSubmitted, setWasAutoSubmitted] = useState(false)
+  const [currentExamId, setCurrentExamId] = useState('')
+  const [authSession, setAuthSession] = useState<AuthSession | null>(() => getAuthSession())
+  const [showAuth, setShowAuth] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [authEmail, setAuthEmail] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [authMessage, setAuthMessage] = useState('')
+  const [history, setHistory] = useState<{ exams: unknown[]; attempts: unknown[] } | null>(null)
 
   const currentQuestion = questionSet[currentIndex]
   const answeredCount = Object.keys(answers).length
@@ -250,6 +260,11 @@ function App() {
       : QUESTIONS
     setQuestionSet(nextQuestionSet)
     setExamTitle(title)
+    if (generatedQuestions.length && authSession) {
+      const saved = saveExam({ title, questions: nextQuestionSet })
+      setCurrentExamId(saved.id)
+      if (authSession) void cloudRequest('/api/cloud/save-exam', { exam: saved }, authSession).catch(() => undefined)
+    } else setCurrentExamId('')
     sessionStorage.removeItem(SESSION_KEY)
     setAnswers({})
     setMarked([])
@@ -263,7 +278,12 @@ function App() {
   }
 
   function submitExam(autoSubmitted = false) {
-    setResult(calculateResult(answers, questionSet))
+    const nextResult = calculateResult(answers, questionSet)
+    setResult(nextResult)
+    if (authSession) {
+      const savedAttempt = saveAttempt({ examId: currentExamId, title: examTitle, score: nextResult.score, correct: nextResult.correct, total: nextResult.total, unanswered: nextResult.unanswered })
+      void cloudRequest('/api/cloud/save-attempt', { attempt: savedAttempt }, authSession).catch(() => undefined)
+    }
     setShowSubmitDialog(false)
     sessionStorage.removeItem(SESSION_KEY)
     setPhase('result')
@@ -299,6 +319,27 @@ function App() {
     }
   }
 
+  async function authenticate() {
+    setAuthMessage('Đang xử lý…')
+    try {
+      const payload = await cloudRequest<AuthSession & { message?: string }>(authMode === 'login' ? '/api/auth/login' : '/api/auth/register', { email: authEmail, password: authPassword })
+      if (!payload.accessToken) { setAuthMessage(payload.message || 'Hãy kiểm tra email để xác nhận tài khoản.'); return }
+      const session = { accessToken: payload.accessToken, refreshToken: payload.refreshToken, email: payload.email, userId: payload.userId }
+      setAuthSession(session); localStorage.setItem('huongmuoi-auth-v1', JSON.stringify(session)); setAuthMessage('Đã đăng nhập. Lịch sử mới sẽ được lưu online.'); setShowAuth(false)
+    } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể đăng nhập.') }
+  }
+
+  async function loadHistory() {
+    if (!authSession) return setShowAuth(true)
+    try { setHistory(await cloudRequest('/api/cloud/history', {}, authSession)) } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
+  }
+
+  function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
+    const link = createShareUrl({ title, questions: questions.map((question, index) => ({ id: index + 1, category: question.category, prompt: question.prompt, options: question.options, correct: question.correctIndex, explanation: question.explanation })) })
+    void navigator.clipboard?.writeText(link)
+    setAuthMessage('Đã sao chép link chia sẻ vào bộ nhớ tạm.')
+  }
+
   function toggleMarked(questionId: number) {
     setMarked((previous) => previous.includes(questionId)
       ? previous.filter((id) => id !== questionId)
@@ -330,6 +371,7 @@ function App() {
             </button>
             <div className="welcome-trust"><CheckCircle2 size={16} /> Không cần đăng nhập · Tự động lưu trong phiên</div>
             <button className="builder-entry" onClick={() => setPhase('builder')}><Sparkles size={15} /> Tạo bộ đề kiểm tra <ArrowRight size={14} /></button>
+            <div className="account-actions"><button className="button button--ghost" onClick={() => setShowAuth(true)}>{authSession ? `Đã đăng nhập: ${authSession.email || 'tài khoản'}` : 'Đăng nhập để lưu lịch sử online'}</button>{authSession && <button className="button button--secondary" onClick={loadHistory}>Xem lịch sử</button>}</div>
           </div>
           <div className="welcome-card-wrap welcome-card-wrap--portrait">
             <div className="floating-label floating-label--top"><Sparkles size={14} /> Sẵn sàng chưa?</div>
@@ -341,6 +383,8 @@ function App() {
           </div>
         </section>
         <footer className="welcome-footer"><span>© 2024 huongmuoi</span><span>Thiết kế cho sự tập trung <span className="footer-symbol">✦</span></span></footer>
+        {showAuth && <div className="dialog-backdrop" role="presentation" onClick={() => setShowAuth(false)}><div className="submit-dialog auth-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}><h2>{authMode === 'login' ? 'Đăng nhập huongmuoi' : 'Tạo tài khoản'}</h2><p>Chỉ tài khoản đã đăng nhập mới lưu bộ đề và lịch sử online trên nhiều thiết bị.</p><input className="auth-input" type="email" value={authEmail} onChange={(event) => setAuthEmail(event.target.value)} placeholder="Email" /><input className="auth-input" type="password" value={authPassword} onChange={(event) => setAuthPassword(event.target.value)} placeholder="Mật khẩu từ 6 ký tự" /><div className="dialog-actions"><button className="button button--ghost" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>{authMode === 'login' ? 'Tạo tài khoản' : 'Đã có tài khoản'}</button><button className="button button--primary" onClick={authenticate}>{authMode === 'login' ? 'Đăng nhập' : 'Đăng ký'}</button></div>{authMessage && <div className="builder-feedback">{authMessage}</div>}</div></div>}
+        {history && <div className="dialog-backdrop" role="presentation" onClick={() => setHistory(null)}><div className="submit-dialog history-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}><h2>Lịch sử của bạn</h2><p>{history.exams.length} bộ đề đã lưu · {history.attempts.length} lần làm bài online.</p><div className="history-list">{history.attempts.slice(0, 8).map((attempt, index) => <div className="history-row" key={index}>{JSON.stringify(attempt)}</div>)}</div><button className="button button--primary" onClick={() => setHistory(null)}>Đóng</button></div></div>}
       </main>
     )
   }

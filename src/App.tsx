@@ -440,6 +440,10 @@ function App() {
           <div className="topbar-note"><BookOpen size={15} /> Học cùng nhau, tiến xa hơn</div>
         </header>
         <section className="welcome-layout">
+          <div className="welcome-floating-decor" aria-hidden="true">
+            <div className="welcome-hearts">{Array.from({ length: 30 }, (_, index) => <span className="floating-heart" key={`heart-${index}`} style={{ '--heart-left': `${(index * 37) % 96 + 2}%`, '--heart-top': `${(index * 53) % 90 + 4}%`, '--heart-delay': `${-((index * 0.73) % 12)}s`, '--heart-duration': `${10 + (index % 7)}s`, '--heart-scale': `${0.55 + (index % 5) * 0.12}`, '--heart-drift': `${(index % 2 ? 1 : -1) * (8 + (index % 5) * 5)}px` } as React.CSSProperties} />)}</div>
+            <div className="welcome-leaves">{Array.from({ length: 10 }, (_, index) => <span className="floating-leaf" key={`leaf-${index}`} style={{ '--leaf-left': `${(index * 61) % 92 + 4}%`, '--leaf-top': `${(index * 43) % 86 + 6}%`, '--leaf-delay': `${-((index * 1.17) % 15)}s`, '--leaf-duration': `${13 + (index % 5)}s`, '--leaf-rotate': `${-28 + (index % 6) * 14}deg`, '--leaf-drift': `${(index % 2 ? -1 : 1) * (12 + (index % 4) * 7)}px` } as React.CSSProperties} />)}</div>
+          </div>
           <div className="welcome-copy">
             <div className="eyebrow"><span className="eyebrow-dot" /> KHÔNG GIAN ÔN LUYỆN &amp; THI ONLINE</div>
             <h1>huongmuoi<br /><em>Học để tiến về phía trước,<br />yêu để cùng nhau đi xa.</em></h1>

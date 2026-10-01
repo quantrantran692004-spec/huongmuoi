@@ -382,3 +382,82 @@
   .app-shell--welcome .welcome-portrait-frame,
   .app-shell--welcome .welcome-portrait-frame img { animation: none; transition: none; }
 }
+
+/* Quiet hero decoration: 30 hearts and 10 leaves behind the first banner. */
+.welcome-floating-decor {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.welcome-hearts,
+.welcome-leaves {
+  position: absolute;
+  inset: 0;
+}
+
+.floating-heart {
+  position: absolute;
+  top: var(--heart-top);
+  left: var(--heart-left);
+  width: 16px;
+  height: 16px;
+  color: rgba(201, 121, 140, .22);
+  opacity: .2;
+  font-size: calc(18px * var(--heart-scale));
+  line-height: 1;
+  transform: translate3d(0, 0, 0) scale(var(--heart-scale));
+  animation: heroHeartFloat var(--heart-duration) ease-in-out var(--heart-delay) infinite;
+}
+
+.floating-heart::before {
+  content: '♥';
+  text-shadow: 0 3px 7px rgba(185, 97, 120, .12);
+}
+
+.floating-leaf {
+  position: absolute;
+  top: var(--leaf-top);
+  left: var(--leaf-left);
+  width: 13px;
+  height: 22px;
+  border-radius: 80% 20% 80% 20%;
+  background: linear-gradient(135deg, rgba(186, 151, 105, .34), rgba(201, 121, 140, .2));
+  opacity: .22;
+  transform: rotate(var(--leaf-rotate));
+  animation: heroLeafFloat var(--leaf-duration) ease-in-out var(--leaf-delay) infinite;
+}
+
+.floating-leaf::after {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 1px;
+  height: 17px;
+  background: rgba(255, 250, 246, .55);
+  content: '';
+  transform: rotate(19deg);
+  transform-origin: top center;
+}
+
+@keyframes heroHeartFloat {
+  0%, 100% { opacity: .08; transform: translate3d(0, 9px, 0) scale(var(--heart-scale)) rotate(-5deg); }
+  50% { opacity: .28; transform: translate3d(var(--heart-drift), -16px, 0) scale(calc(var(--heart-scale) * 1.12)) rotate(7deg); }
+}
+
+@keyframes heroLeafFloat {
+  0%, 100% { opacity: .08; transform: translate3d(0, 10px, 0) rotate(var(--leaf-rotate)); }
+  50% { opacity: .3; transform: translate3d(var(--leaf-drift), -22px, 0) rotate(calc(var(--leaf-rotate) + 35deg)); }
+}
+
+@media (max-width: 760px) {
+  .welcome-floating-decor { opacity: .72; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-heart,
+  .floating-leaf { animation: none; }
+}

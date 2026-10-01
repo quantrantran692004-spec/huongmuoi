@@ -214,3 +214,28 @@
 @media (prefers-reduced-motion: reduce) {
   .app-shell--welcome .welcome-copy::before, .app-shell--welcome .welcome-copy::after, .app-shell--welcome .welcome-card-wrap--portrait::before, .app-shell--welcome .welcome-card-wrap--portrait::after { animation: none; }
 }
+
+/* Local preview sizing pass: larger hero and readable footer, palette unchanged. */
+@media (min-width: 761px) {
+  .app-shell--welcome { padding-inline: 4.5vw; }
+  .app-shell--welcome .brand-name { font-size: 22px; }
+  .app-shell--welcome .brand-mark { height: 35px; font-size: 27px; }
+  .app-shell--welcome .brand-mark b { font-size: 30px; }
+  .app-shell--welcome .brand::after { margin-left: 47px; font-size: 10px; }
+  .app-shell--welcome .topbar-note { font-size: 13px; }
+  .app-shell--welcome .welcome-layout { width: min(1280px, 100%); min-height: min(760px, calc(100vh - 86px)); grid-template-columns: minmax(0, 1fr) minmax(500px, .9fr); gap: clamp(58px, 7vw, 108px); }
+  .app-shell--welcome .welcome-copy h1 { max-width: 760px; font-size: clamp(52px, 5.8vw, 84px); }
+  .app-shell--welcome .welcome-lede { font-size: clamp(18px, 1.55vw, 22px); }
+  .app-shell--welcome .welcome-card-wrap--portrait { width: min(100%, 590px); height: min(75vh, 680px); min-height: 540px; }
+  .app-shell--welcome .portrait-caption { padding: 21px 22px; }
+  .app-shell--welcome .portrait-caption strong { font-size: clamp(22px, 2.1vw, 30px); }
+  .app-shell--welcome .welcome-footer { margin-right: -4.5vw; margin-left: -4.5vw; padding: 34px max(4.5vw, 30px) 16px; }
+  .footer-grid { gap: clamp(28px, 4vw, 72px); }
+  .footer-brand > strong { font-size: 23px; }
+  .footer-brand p, .footer-column p { font-size: 11px; line-height: 1.55; }
+  .footer-motto { font-size: 10px; }
+  .footer-column h2 { font-size: 10px; }
+  .footer-contact p span { font-size: 9px; }
+  .footer-contact p strong, .footer-nav button { font-size: 11px; }
+  .footer-bottom { margin-top: 25px; padding-top: 10px; font-size: 9px; }
+}

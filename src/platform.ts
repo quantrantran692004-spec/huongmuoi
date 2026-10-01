@@ -25,6 +25,17 @@ export type SavedAttempt = {
   total: number
   unanswered: number
   completedAt: string
+  review?: AttemptReviewItem[]
+}
+
+export type AttemptReviewItem = {
+  questionId: number
+  category: string
+  prompt: string
+  options: string[]
+  selectedIndex: number | null
+  correctIndex: number
+  explanation: string
 }
 
 const EXAMS_KEY = 'huongmuoi-exams-v1'

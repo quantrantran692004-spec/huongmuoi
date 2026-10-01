@@ -16,8 +16,11 @@ create table if not exists public.attempts (
   correct integer not null default 0,
   total integer not null default 0,
   unanswered integer not null default 0,
+  review jsonb,
   completed_at timestamptz not null default now()
 );
+
+alter table public.attempts add column if not exists review jsonb;
 
 alter table public.exams enable row level security;
 alter table public.attempts enable row level security;

@@ -32,6 +32,24 @@
 .history-empty svg { color: var(--teal); }
 .history-empty strong { color: var(--ink); font-size: 13px; }
 .history-close { width: 100%; }
+.history-row-actions .history-action:disabled { color: #b8aab0; background: #f3edef; border-color: #eee1e4; cursor: not-allowed; }
+.attempt-review-dialog { width: min(100%, 720px); max-height: min(800px, calc(100vh - 32px)); overflow: hidden; }
+.attempt-review-list { display: grid; gap: 10px; max-height: 490px; margin: 20px 0; padding-right: 4px; overflow: auto; }
+.attempt-review-item { padding: 14px; background: #fffafa; border: 1px solid #eadde0; border-left: 4px solid #d995a3; border-radius: 9px; }
+.attempt-review-item--correct { background: #f2faf5; border-color: #cce4d7; border-left-color: #5d9c82; }
+.attempt-review-item--wrong { background: #fff4f4; border-color: #f0d2d7; border-left-color: #c95870; }
+.attempt-review-item--unanswered { background: #fff9e8; border-color: #f1dfae; border-left-color: #d5a83c; }
+.attempt-review-top { display: flex; align-items: center; gap: 8px; }
+.attempt-review-number { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700; }
+.attempt-review-category { padding: 3px 7px; color: var(--teal-deep); background: var(--teal-soft); border-radius: 99px; font-size: 9px; font-weight: 800; }
+.attempt-review-top strong { margin-left: auto; color: #398064; font-size: 10px; }
+.attempt-review-item--wrong .attempt-review-top strong { color: #b33f59; }
+.attempt-review-item--unanswered .attempt-review-top strong { color: #a17418; }
+.attempt-review-item h3 { margin: 9px 0 12px; color: var(--ink); font-size: 13px; line-height: 1.5; }
+.attempt-review-answer { display: flex; gap: 8px; margin-top: 5px; color: var(--muted); font-size: 11px; }
+.attempt-review-answer span { flex: 0 0 92px; }
+.attempt-review-answer strong { color: var(--ink); font-weight: 700; }
+.attempt-review-explanation { margin: 12px 0 0; padding: 9px 10px; color: #52766a; background: rgba(234, 247, 239, .75); border-left: 2px solid #65a68a; font-size: 11px; line-height: 1.5; }
 @media (max-width: 760px) {
   .topbar { height: 68px; padding: 0 16px; }
   .topbar-note { display: none; }
@@ -69,4 +87,9 @@
   .history-summary span { font-size: 7px; }
   .history-row-heading { flex-direction: column; gap: 5px; }
   .history-date { text-align: left; }
+  .history-row-actions { flex-wrap: wrap; justify-content: flex-start; }
+  .attempt-review-dialog { padding: 22px; }
+  .attempt-review-list { max-height: 430px; }
+  .attempt-review-answer { display: block; }
+  .attempt-review-answer span { display: block; margin-bottom: 2px; }
 }

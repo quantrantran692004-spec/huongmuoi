@@ -55,7 +55,7 @@ export function registerCloudRoutes(app) {
     try {
       const token = authToken(req); const userId = userIdFromToken(token); const attempt = req.body?.attempt
       if (!attempt?.title) throw new Error('Lần làm bài không hợp lệ.')
-      const row = { id: attempt.id || crypto.randomUUID(), user_id: userId, exam_id: attempt.examId || null, title: String(attempt.title).slice(0, 160), score: Number(attempt.score) || 0, correct: Number(attempt.correct) || 0, total: Number(attempt.total) || 0, unanswered: Number(attempt.unanswered) || 0, completed_at: attempt.completedAt || new Date().toISOString() }
+      const row = { id: attempt.id || crypto.randomUUID(), user_id: userId, exam_id: attempt.examId || null, title: String(attempt.title).slice(0, 160), score: Number(attempt.score) || 0, correct: Number(attempt.correct) || 0, total: Number(attempt.total) || 0, unanswered: Number(attempt.unanswered) || 0, review: Array.isArray(attempt.review) ? attempt.review : null, completed_at: attempt.completedAt || new Date().toISOString() }
       await supabase('/rest/v1/attempts', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(row) }, token)
       res.json({ ok: true, attempt: row })
     } catch (error) { jsonError(res, error) }

@@ -351,16 +351,37 @@ function App() {
     } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể đăng nhập.') }
   }
 
+  async function refreshAuthSession(session: AuthSession) {
+    if (!session.refreshToken) return null
+    const payload = await cloudRequest<AuthSession>('/api/auth/refresh', { refreshToken: session.refreshToken })
+    const nextSession = { ...session, ...payload, refreshToken: payload.refreshToken || session.refreshToken, email: payload.email || session.email, userId: payload.userId || session.userId }
+    setAuthSession(nextSession)
+    localStorage.setItem('huongmuoi-auth-v1', JSON.stringify(nextSession))
+    return nextSession
+  }
+
   async function loadHistory() {
     if (!authSession) return setShowAuth(true)
+    let session = authSession
     try {
-      const payload = await cloudRequest<{ exams: Array<SavedExam & { updated_at?: string }>; attempts: Array<SavedAttempt & { exam_id?: string | null; completed_at?: string }> }>('/api/cloud/history', {}, authSession)
+      let payload
+      try {
+        payload = await cloudRequest<{ exams: Array<SavedExam & { updated_at?: string }>; attempts: Array<SavedAttempt & { exam_id?: string | null; completed_at?: string }> }>('/api/cloud/history', {}, session)
+      } catch (firstError) {
+        const refreshed = await refreshAuthSession(session)
+        if (!refreshed) throw firstError
+        session = refreshed
+        payload = await cloudRequest<{ exams: Array<SavedExam & { updated_at?: string }>; attempts: Array<SavedAttempt & { exam_id?: string | null; completed_at?: string }> }>('/api/cloud/history', {}, session)
+      }
       setHistory({
         exams: payload.exams.map((exam) => ({ ...exam, updatedAt: exam.updatedAt || exam.updated_at || new Date().toISOString() })),
         attempts: payload.attempts.map((attempt) => ({ ...attempt, examId: attempt.examId || attempt.exam_id || '', completedAt: attempt.completedAt || attempt.completed_at || '' })),
       })
       setHistoryTab('attempts')
-    } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
+    } catch (error) {
+      setAuthMessage(error instanceof Error ? error.message : 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
+      setShowAuth(true)
+    }
   }
 
   function formatHistoryDate(value: string) {

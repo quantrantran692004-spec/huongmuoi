@@ -41,6 +41,15 @@ export function registerCloudRoutes(app) {
     } catch (error) { jsonError(res, error) }
   })
 
+  app.post('/api/auth/refresh', async (req, res) => {
+    try {
+      const refreshToken = String(req.body?.refreshToken || '')
+      if (!refreshToken) throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
+      const payload = await supabase('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: JSON.stringify({ refresh_token: refreshToken }) })
+      res.json({ accessToken: payload.access_token, refreshToken: payload.refresh_token || refreshToken, email: payload.user?.email, userId: payload.user?.id })
+    } catch (error) { jsonError(res, error) }
+  })
+
   app.post('/api/cloud/save-exam', async (req, res) => {
     try {
       const token = authToken(req); const userId = userIdFromToken(token); const exam = req.body?.exam

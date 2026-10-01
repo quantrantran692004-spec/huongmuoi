@@ -96,7 +96,8 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
 
   async function generateQuestions() {
     clearFeedback()
-    if (sourceText.trim().length < 80 && topic.trim().length < 3 && instructions.trim().length < 3) return setError('Hãy nhập yêu cầu ở Bước 02, chủ đề, hoặc dán nội dung / tải file / đọc URL trước.')
+    if (instructions.trim().length < 3) return setError('Hãy nhập yêu cầu bắt buộc ở Bước 02 trước khi tạo bộ đề.')
+    if (sourceText.trim().length < 80 && topic.trim().length < 3) return setError('Hãy nhập chủ đề hoặc thêm nội dung nguồn trước khi tạo bộ đề.')
     setQuestions([])
     setLoading('generate')
     try {
@@ -161,7 +162,7 @@ export default function QuestionBuilder({ onBack, onStartExam, onShareExam }: Qu
           <section className="settings-card builder-card">
             <div className="builder-card-heading"><div><span className="card-kicker">BƯỚC 02</span><h2>Thiết lập bài thi</h2></div><WandSparkles size={20} /></div>
             <label className="field-label">Chủ đề hoặc tên bài<span>Không bắt buộc</span><input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="Ví dụ: JavaScript cơ bản" /></label>
-            <label className="field-label instruction-field">Nhập yêu cầu của bạn<span>Tùy chọn · chỉ dẫn riêng cho AI, không phải tài liệu nguồn</span><textarea value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="Tạo câu hỏi về mạng máy tính" maxLength={1200} aria-label="Yêu cầu riêng cho AI" /></label>
+            <label className="field-label instruction-field">Yêu cầu tạo câu hỏi<span>Bắt buộc · mô tả nội dung và cách bạn muốn ra câu hỏi</span><textarea required value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="Ví dụ: tạo câu hỏi tập trung vào phần trọng tâm của bài học" maxLength={1200} aria-label="Yêu cầu tạo câu hỏi" /></label>
             <div className="field-row"><label className="field-label">Số câu<span>10–100 câu</span><select value={count} onChange={(event) => setCount(event.target.value)}>{questionCountOptions.map((value) => <option value={value} key={value}>{value} câu</option>)}</select></label><label className="field-label">Độ khó<select value={difficulty} onChange={(event) => setDifficulty(event.target.value)}><option>Dễ</option><option>Vừa</option><option>Khó</option></select></label></div>
             <div className="ai-note"><Sparkles size={16} /><p><strong>CÂU HỎI VÀ ĐÁP ÁN ĐÃ KIỂM ĐỊNH</strong><br />Chỉ nhập chủ đề cũng đủ. Mỗi câu được rà lại đáp án, lựa chọn trùng và độ mơ hồ trước khi hiển thị.</p></div>
             <button className="button button--primary button--generate" onClick={generateQuestions} disabled={loading === 'generate'}>{loading === 'generate' ? <><LoaderCircle className="spin" size={17} /> Đang tạo câu hỏi…</> : <><Sparkles size={17} /> Tạo bộ đề kiểm tra</>}</button>

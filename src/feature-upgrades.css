@@ -261,3 +261,79 @@
   .footer-contact p { margin-top: 3px; }
   .footer-bottom { margin-top: 6px; padding-top: 5px; }
 }
+
+/* Reference composition: fixed desktop proportions, independent of window height. */
+@media (min-width: 761px) {
+  .app-shell--welcome { height: auto; min-height: 100vh; overflow: visible; }
+  .app-shell--welcome .topbar { height: 58px; min-height: 58px; }
+  .app-shell--welcome .welcome-layout { flex: 0 0 auto; width: min(1180px, 100%); min-height: 0; margin: 0 auto; padding: 24px 0 24px; grid-template-columns: minmax(0, 1fr) minmax(360px, .76fr); gap: clamp(48px, 5.5vw, 82px); align-items: start; }
+  .app-shell--welcome .welcome-copy { padding: 0; align-self: start; }
+  .app-shell--welcome .welcome-copy h1 { max-width: 560px; margin: 12px 0 16px; font-size: clamp(44px, 5vw, 64px); line-height: 1.02; }
+  .app-shell--welcome .welcome-copy h1 em { margin-top: 7px; line-height: 1.04; }
+  .app-shell--welcome .welcome-lede { margin-bottom: 18px; font-size: 16px; }
+  .app-shell--welcome .welcome-card-wrap--portrait { align-self: start; justify-self: end; width: min(100%, 430px); height: 500px; min-height: 0; margin-top: 0; }
+  .app-shell--welcome .welcome-portrait-frame { height: 430px; }
+  .app-shell--welcome .portrait-caption { bottom: -70px; }
+  .app-shell--welcome .welcome-footer { margin-top: auto; }
+}
+
+/* Reference-ratio layout: 7% header, 68% hero, 25% footer. */
+@media (min-width: 761px) {
+  .app-shell--welcome { height: 100vh; min-height: 0; overflow: hidden; }
+  .app-shell--welcome .brand-name { font-size: 24px; }
+  .app-shell--welcome .brand-mark { height: 39px; font-size: 30px; }
+  .app-shell--welcome .brand-mark b { font-size: 33px; }
+  .app-shell--welcome .topbar-note { font-size: 14px; }
+  .app-shell--welcome .topbar { height: 8vh; min-height: 58px; }
+  .app-shell--welcome .welcome-layout { flex: 0 0 75vh; width: min(1180px, 100%); min-height: 0; margin: 0 auto; padding: 5vh 0 1vh; grid-template-columns: minmax(0, 1fr) minmax(390px, .78fr); gap: clamp(48px, 5.5vw, 82px); align-items: start; }
+  .app-shell--welcome .welcome-copy { padding: 1vh 0 0; align-self: start; }
+  .app-shell--welcome .welcome-copy h1 { margin: 1vh 0 1.4vh; max-width: 560px; font-size: clamp(44px, 6vh, 76px); line-height: 1.01; }
+  .app-shell--welcome .welcome-copy h1 em { margin-top: .7vh; line-height: 1.04; }
+  .app-shell--welcome .welcome-lede { margin-bottom: 1.8vh; font-size: clamp(15px, 1.8vh, 20px); }
+  .app-shell--welcome .welcome-card-wrap--portrait { align-self: start; justify-self: end; width: min(38vw, 500px); height: 60vh; min-height: 0; margin-top: 0; }
+  .app-shell--welcome .welcome-portrait-frame { height: 52vh; }
+  .app-shell--welcome .portrait-caption { bottom: -7vh; }
+  .app-shell--welcome .welcome-footer { height: 17vh; min-height: 0; margin: 0; padding: 2vh max(4.5vw, 30px) 1vh; }
+  .footer-brand > strong { font-size: 21px; }
+  .footer-brand p, .footer-column p { font-size: 10px; line-height: 1.35; }
+  .footer-bottom { margin-top: 2vh; }
+}
+
+/* Fixed shell: only the middle Hero scrolls; top and bottom banners stay full-width. */
+@media (min-width: 761px) {
+  .app-shell--welcome { height: 100vh; min-height: 0; overflow: hidden; padding-inline: 4.5vw; }
+  .app-shell--welcome .topbar { flex: 0 0 8vh; width: calc(100% + 9vw); height: 8vh; min-height: 58px; margin-inline: -4.5vw; padding-inline: 4.5vw; }
+  .app-shell--welcome .welcome-layout { flex: 1 1 auto; width: min(1180px, 100%); min-height: 0; height: auto; margin: 0 auto; padding: 4vh 0 3vh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .app-shell--welcome .welcome-layout::-webkit-scrollbar { display: none; }
+  .app-shell--welcome .welcome-footer { flex: 0 0 15vh; width: calc(100% + 9vw); height: 15vh; min-height: 0; margin: 0 -4.5vw; padding: 2vh max(4.5vw, 30px) 1vh; overflow: hidden; }
+  .app-shell--welcome .welcome-copy > .button--large { margin-bottom: 1.4vh; }
+  .app-shell--welcome .builder-entry--prominent { margin-top: 1.8vh; }
+  .app-shell--welcome .account-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.8vh; }
+}
+
+@media (min-width: 761px) {
+  .app-shell--welcome .welcome-copy > .button--large,
+  .app-shell--welcome .builder-entry--prominent,
+  .app-shell--welcome .account-actions .login-entry {
+    width: 250px;
+    min-height: 48px;
+    justify-content: center;
+    padding-inline: 16px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .app-shell--welcome .welcome-copy > .button--large { margin-bottom: 2vh; }
+  .app-shell--welcome .builder-entry--prominent { margin-top: 2.2vh; }
+  .app-shell--welcome .account-actions { margin-top: 2.2vh; }
+  .app-shell--welcome .builder-entry--prominent,
+  .app-shell--welcome .account-actions .login-entry { animation: gentleActionPulse 4.8s ease-in-out infinite; }
+  .app-shell--welcome .account-actions .login-entry { animation-delay: -2.2s; }
+}
+@keyframes gentleActionPulse {
+  0%, 72%, 100% { box-shadow: 0 5px 15px rgba(185, 97, 120, .08); }
+  82% { box-shadow: 0 7px 20px rgba(185, 97, 120, .2), 0 0 0 4px rgba(217, 129, 145, .08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell--welcome .builder-entry--prominent,
+  .app-shell--welcome .account-actions .login-entry { animation: none; }
+}

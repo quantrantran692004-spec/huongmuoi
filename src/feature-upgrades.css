@@ -6,6 +6,12 @@
 .auth-input:focus { outline: 3px solid rgba(31, 92, 92, .12); border-color: var(--teal); }
 .history-list { display: grid; gap: 8px; max-height: 300px; margin: 17px 0; overflow: auto; }
 .history-row { padding: 10px; color: var(--muted); background: #f6f4ee; border: 1px solid var(--line); border-radius: 6px; font-size: 11px; line-height: 1.45; word-break: break-word; }
+.history-row-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.history-row-heading strong { color: var(--ink); font-size: 12px; line-height: 1.4; }
+.history-row-heading span { flex: 0 0 auto; color: var(--muted); font-size: 10px; text-align: right; }
+.history-row-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; color: var(--muted); font-size: 10px; }
+.history-score { color: var(--teal-deep); font-weight: 800; }
+.history-empty { padding: 18px 10px; color: var(--muted); text-align: center; font-size: 11px; }
 @media (max-width: 760px) {
   .topbar { height: 68px; padding: 0 16px; }
   .topbar-note { display: none; }
@@ -36,4 +42,6 @@
   .welcome-card-wrap { justify-self: center; order: -1; width: min(100%, 360px); }
   .welcome-copy h1 { font-size: clamp(42px, 14vw, 64px); }
   .welcome-footer { gap: 12px; flex-direction: column; }
+  .history-row-heading { flex-direction: column; gap: 3px; }
+  .history-row-heading span { text-align: left; }
 }

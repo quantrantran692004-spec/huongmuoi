@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import QuestionBuilder, { GeneratedQuestion } from './QuestionBuilder'
-import { AuthSession, cloudRequest, createShareUrl, getAuthSession, readSharedExam, saveAttempt, saveExam } from './platform'
+import { AuthSession, SavedAttempt, SavedExam, cloudRequest, createShareUrl, getAuthSession, readSharedExam, saveAttempt, saveExam } from './platform'
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,6 +51,11 @@ type Result = {
   total: number
   unanswered: number
   categories: { name: string; correct: number; total: number }[]
+}
+
+type History = {
+  exams: SavedExam[]
+  attempts: SavedAttempt[]
 }
 
 const EXAM_DURATION = 12 * 60
@@ -204,7 +209,7 @@ function App() {
   const [authEmail, setAuthEmail] = useState('')
   const [authPassword, setAuthPassword] = useState('')
   const [authMessage, setAuthMessage] = useState('')
-  const [history, setHistory] = useState<{ exams: unknown[]; attempts: unknown[] } | null>(null)
+  const [history, setHistory] = useState<History | null>(null)
 
   const currentQuestion = questionSet[currentIndex]
   const answeredCount = Object.keys(answers).length
@@ -331,7 +336,13 @@ function App() {
 
   async function loadHistory() {
     if (!authSession) return setShowAuth(true)
-    try { setHistory(await cloudRequest('/api/cloud/history', {}, authSession)) } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
+    try { setHistory(await cloudRequest<History>('/api/cloud/history', {}, authSession)) } catch (error) { setAuthMessage(error instanceof Error ? error.message : 'Không thể tải lịch sử.') }
+  }
+
+  function formatHistoryDate(value: string) {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Thời gian không xác định'
+    return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium', timeStyle: 'short' }).format(date)
   }
 
   function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
@@ -384,7 +395,7 @@ function App() {
         </section>
         <footer className="welcome-footer"><span>© 2024 huongmuoi</span><span>Thiết kế cho sự tập trung <span className="footer-symbol">✦</span></span></footer>
         {showAuth && <div className="dialog-backdrop" role="presentation" onClick={() => setShowAuth(false)}><div className="submit-dialog auth-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}><h2>{authMode === 'login' ? 'Đăng nhập huongmuoi' : 'Tạo tài khoản'}</h2><p>Chỉ tài khoản đã đăng nhập mới lưu bộ đề và lịch sử online trên nhiều thiết bị.</p><input className="auth-input" type="email" value={authEmail} onChange={(event) => setAuthEmail(event.target.value)} placeholder="Email" /><input className="auth-input" type="password" value={authPassword} onChange={(event) => setAuthPassword(event.target.value)} placeholder="Mật khẩu từ 6 ký tự" /><div className="dialog-actions"><button className="button button--ghost" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>{authMode === 'login' ? 'Tạo tài khoản' : 'Đã có tài khoản'}</button><button className="button button--primary" onClick={authenticate}>{authMode === 'login' ? 'Đăng nhập' : 'Đăng ký'}</button></div>{authMessage && <div className="builder-feedback">{authMessage}</div>}</div></div>}
-        {history && <div className="dialog-backdrop" role="presentation" onClick={() => setHistory(null)}><div className="submit-dialog history-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}><h2>Lịch sử của bạn</h2><p>{history.exams.length} bộ đề đã lưu · {history.attempts.length} lần làm bài online.</p><div className="history-list">{history.attempts.slice(0, 8).map((attempt, index) => <div className="history-row" key={index}>{JSON.stringify(attempt)}</div>)}</div><button className="button button--primary" onClick={() => setHistory(null)}>Đóng</button></div></div>}
+        {history && <div className="dialog-backdrop" role="presentation" onClick={() => setHistory(null)}><div className="submit-dialog history-dialog" role="dialog" aria-modal="true" aria-labelledby="history-title" onClick={(event) => event.stopPropagation()}><h2 id="history-title">Lịch sử của bạn</h2><p>{history.exams.length} bộ đề đã lưu · {history.attempts.length} lần làm bài online.</p><div className="history-list">{history.attempts.length ? history.attempts.slice(0, 8).map((attempt) => <article className="history-row" key={attempt.id}><div className="history-row-heading"><strong>{attempt.title}</strong><span>{formatHistoryDate(attempt.completedAt)}</span></div><div className="history-row-stats"><span className="history-score">{attempt.score}/100 điểm</span><span>{attempt.correct}/{attempt.total} câu đúng</span><span>{attempt.unanswered} câu chưa trả lời</span></div></article>) : <div className="history-empty">Bạn chưa có lần làm bài nào.</div>}</div><button className="button button--primary" onClick={() => setHistory(null)}>Đóng</button></div></div>}
       </main>
     )
   }

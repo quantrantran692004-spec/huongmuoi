@@ -204,15 +204,16 @@ function AppLogo({ compact = false }: { compact?: boolean }) {
 function App() {
   const restored = useMemo(() => loadSession(), [])
   const shared = useMemo(() => readSharedExam(), [])
-  const initialQuestionSet = restored?.questionSet?.length ? restored.questionSet : shared?.questions?.map((question) => ({ ...question })) || QUESTIONS
+  const initialQuestionSet = shared?.questions?.length ? shared.questions.map((question) => ({ ...question })) : restored?.questionSet?.length ? restored.questionSet : QUESTIONS
+  const hasSharedExam = Boolean(shared?.questions?.length)
   const [phase, setPhase] = useState<Phase>(restored || shared ? 'quiz' : 'welcome')
-  const [examTitle, setExamTitle] = useState(restored?.examTitle || shared?.title || 'Bài thi mẫu · Nền tảng Web')
+  const [examTitle, setExamTitle] = useState(shared?.title || restored?.examTitle || 'Bài thi mẫu · Nền tảng Web')
   const [questionSet, setQuestionSet] = useState<Question[]>(initialQuestionSet)
-  const [currentIndex, setCurrentIndex] = useState(restored?.currentIndex ?? 0)
-  const [answers, setAnswers] = useState<Answers>(restored?.answers ?? {})
-  const [marked, setMarked] = useState<number[]>(restored?.marked ?? [])
-  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? examDuration(initialQuestionSet.length, shared?.durationMinutes))
-  const [durationMinutes, setDurationMinutes] = useState(restored?.durationMinutes ?? shared?.durationMinutes ?? initialQuestionSet.length)
+  const [currentIndex, setCurrentIndex] = useState(hasSharedExam ? 0 : restored?.currentIndex ?? 0)
+  const [answers, setAnswers] = useState<Answers>(hasSharedExam ? {} : restored?.answers ?? {})
+  const [marked, setMarked] = useState<number[]>(hasSharedExam ? [] : restored?.marked ?? [])
+  const [timeLeft, setTimeLeft] = useState(hasSharedExam ? examDuration(initialQuestionSet.length, shared?.durationMinutes) : restored?.timeLeft ?? examDuration(initialQuestionSet.length, shared?.durationMinutes))
+  const [durationMinutes, setDurationMinutes] = useState(hasSharedExam ? shared?.durationMinutes ?? initialQuestionSet.length : restored?.durationMinutes ?? shared?.durationMinutes ?? initialQuestionSet.length)
   const [result, setResult] = useState<Result | null>(null)
   const [showSubmitDialog, setShowSubmitDialog] = useState(false)
   const [showReview, setShowReview] = useState(false)
@@ -442,10 +443,14 @@ function App() {
     void enterFullscreen()
   }
 
-  function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
+  async function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
     const link = createShareUrl({ title, durationMinutes, questions: questions.map((question, index) => ({ id: index + 1, category: question.category, prompt: question.prompt, options: question.options, correct: question.correctIndex, explanation: question.explanation })) })
-    void navigator.clipboard?.writeText(link)
-    setAuthMessage('Đã sao chép link chia sẻ vào bộ nhớ tạm.')
+    try {
+      await navigator.clipboard?.writeText(link)
+    } catch {
+      // The generated link is still returned and shown in the builder.
+    }
+    return link
   }
 
   function toggleMarked(questionId: number) {

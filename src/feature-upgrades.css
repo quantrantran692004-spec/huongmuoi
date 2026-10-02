@@ -1853,3 +1853,55 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Share link feedback shown below the generated exam actions. */
+.share-link-panel {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(182, 133, 145, .4);
+  border-radius: 12px;
+  background: rgba(255, 248, 249, .86);
+}
+
+.share-link-panel > strong {
+  color: #a34e67;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+.share-link-panel > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.share-link-panel input {
+  min-width: 0;
+  flex: 1;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid rgba(182, 133, 145, .45);
+  border-radius: 8px;
+  background: #fff;
+  color: #5d4a52;
+  font-size: 12px;
+}
+
+.share-link-panel .button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 13px;
+}
+
+@media (max-width: 600px) {
+  .share-link-panel > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .share-link-panel input {
+    width: 100%;
+  }
+}

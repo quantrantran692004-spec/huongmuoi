@@ -54,8 +54,15 @@ export function registerCloudRoutes(app) {
     try {
       const token = authToken(req); const userId = userIdFromToken(token); const exam = req.body?.exam
       if (!exam?.title || !Array.isArray(exam.questions)) throw new Error('Bộ đề không hợp lệ.')
-      const row = { id: exam.id || crypto.randomUUID(), user_id: userId, title: String(exam.title).slice(0, 160), questions: exam.questions, updated_at: new Date().toISOString() }
-      await supabase('/rest/v1/exams?on_conflict=id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row) }, token)
+      const durationMinutes = Math.min(300, Math.max(1, Number(exam.durationMinutes) || exam.questions.length))
+      const row = { id: exam.id || crypto.randomUUID(), user_id: userId, title: String(exam.title).slice(0, 160), questions: exam.questions, duration_minutes: durationMinutes, updated_at: new Date().toISOString() }
+      try {
+        await supabase('/rest/v1/exams?on_conflict=id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row) }, token)
+      } catch (error) {
+        if (!/duration_minutes|column/i.test(error.message || '')) throw error
+        const { duration_minutes: _ignored, ...legacyRow } = row
+        await supabase('/rest/v1/exams?on_conflict=id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(legacyRow) }, token)
+      }
       res.json({ ok: true, exam: row })
     } catch (error) { jsonError(res, error) }
   })

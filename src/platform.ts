@@ -12,6 +12,7 @@ export type SavedExam = {
   id: string
   title: string
   questions: PlatformQuestion[]
+  durationMinutes?: number
   createdAt: string
   updatedAt: string
 }
@@ -71,11 +72,11 @@ export function setAuthSession(session: AuthSession | null) { session ? write(AU
 
 function encodeUtf8(value: string) { return btoa(unescape(encodeURIComponent(value))) }
 function decodeUtf8(value: string) { return decodeURIComponent(escape(atob(value))) }
-export function createShareUrl(exam: Pick<SavedExam, 'title' | 'questions'>) {
-  const payload = encodeUtf8(JSON.stringify({ title: exam.title, questions: exam.questions }))
+export function createShareUrl(exam: Pick<SavedExam, 'title' | 'questions' | 'durationMinutes'>) {
+  const payload = encodeUtf8(JSON.stringify({ title: exam.title, questions: exam.questions, durationMinutes: exam.durationMinutes }))
   return `${window.location.origin}${window.location.pathname}#exam=${encodeURIComponent(payload)}`
 }
-export function readSharedExam(): { title: string; questions: PlatformQuestion[] } | null {
+export function readSharedExam(): { title: string; questions: PlatformQuestion[]; durationMinutes?: number } | null {
   const match = window.location.hash.match(/(?:^|#)exam=([^&]+)/)
   if (!match) return null
   try {

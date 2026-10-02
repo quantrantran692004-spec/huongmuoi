@@ -4,6 +4,7 @@ create table if not exists public.exams (
   user_id uuid not null references auth.users(id) on delete cascade,
   title text not null,
   questions jsonb not null,
+  duration_minutes integer not null default 0,
   updated_at timestamptz not null default now()
 );
 
@@ -21,6 +22,7 @@ create table if not exists public.attempts (
 );
 
 alter table public.attempts add column if not exists review jsonb;
+alter table public.exams add column if not exists duration_minutes integer not null default 0;
 
 alter table public.exams enable row level security;
 alter table public.attempts enable row level security;

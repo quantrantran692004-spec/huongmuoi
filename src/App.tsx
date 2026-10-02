@@ -51,6 +51,7 @@ type SessionState = {
   timeLeft: number
   examTitle?: string
   questionSet?: Question[]
+  durationMinutes?: number
 }
 
 type Result = {
@@ -70,8 +71,9 @@ type HistoryTab = 'attempts' | 'exams'
 
 const SESSION_KEY = 'examflow-session-v1'
 
-function examDuration(questionCount: number) {
-  return Math.max(1, questionCount) * 60
+function examDuration(questionCount: number, configuredMinutes = questionCount) {
+  const minutes = Math.min(300, Math.max(1, Number(configuredMinutes) || questionCount))
+  return minutes * 60
 }
 
 const QUESTIONS: Question[] = [
@@ -209,7 +211,8 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(restored?.currentIndex ?? 0)
   const [answers, setAnswers] = useState<Answers>(restored?.answers ?? {})
   const [marked, setMarked] = useState<number[]>(restored?.marked ?? [])
-  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? examDuration(initialQuestionSet.length))
+  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? examDuration(initialQuestionSet.length, shared?.durationMinutes))
+  const [durationMinutes, setDurationMinutes] = useState(restored?.durationMinutes ?? shared?.durationMinutes ?? initialQuestionSet.length)
   const [result, setResult] = useState<Result | null>(null)
   const [showSubmitDialog, setShowSubmitDialog] = useState(false)
   const [showReview, setShowReview] = useState(false)
@@ -235,8 +238,8 @@ function App() {
 
   useEffect(() => {
     if (phase !== 'quiz') return
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, marked, currentIndex, timeLeft, examTitle, questionSet }))
-  }, [answers, currentIndex, examTitle, marked, phase, questionSet, timeLeft])
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, marked, currentIndex, timeLeft, examTitle, questionSet, durationMinutes }))
+  }, [answers, currentIndex, durationMinutes, examTitle, marked, phase, questionSet, timeLeft])
 
   useEffect(() => {
     if (phase !== 'quiz') return
@@ -280,14 +283,16 @@ function App() {
     }
   }
 
-  function startExam(generatedQuestions: GeneratedQuestion[] = [], title = 'Bài thi mẫu · Nền tảng Web') {
+  function startExam(generatedQuestions: GeneratedQuestion[] = [], title = 'Bài thi mẫu · Nền tảng Web', configuredMinutes?: number) {
     const nextQuestionSet: Question[] = generatedQuestions.length
       ? generatedQuestions.map((question, index) => ({ id: index + 1, category: question.category, prompt: question.prompt, options: question.options, correct: question.correctIndex, explanation: question.explanation }))
       : QUESTIONS
     setQuestionSet(nextQuestionSet)
     setExamTitle(title)
+    const nextDurationMinutes = Math.min(300, Math.max(1, Number(configuredMinutes) || nextQuestionSet.length))
+    setDurationMinutes(nextDurationMinutes)
     if (generatedQuestions.length && authSession) {
-      const saved = saveExam({ title, questions: nextQuestionSet })
+      const saved = saveExam({ title, questions: nextQuestionSet, durationMinutes: nextDurationMinutes })
       setCurrentExamId(saved.id)
       if (authSession) void cloudRequest('/api/cloud/save-exam', { exam: saved }, authSession).catch(() => undefined)
     } else setCurrentExamId('')
@@ -295,7 +300,7 @@ function App() {
     setAnswers({})
     setMarked([])
     setCurrentIndex(0)
-    setTimeLeft(examDuration(nextQuestionSet.length))
+    setTimeLeft(examDuration(nextQuestionSet.length, nextDurationMinutes))
     setResult(null)
     setShowReview(false)
     setShowResultPopup(false)
@@ -394,7 +399,7 @@ function App() {
       const cloudExamIds = new Set(payload.exams.map((exam) => exam.id))
       const cloudAttemptIds = new Set(payload.attempts.map((attempt) => attempt.id))
       setHistory({
-        exams: [...payload.exams, ...localExams.filter((exam) => !cloudExamIds.has(exam.id))].map((exam) => { const item = exam as SavedExam & { updated_at?: string }; return { ...item, updatedAt: item.updatedAt || item.updated_at || new Date().toISOString() } }).sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)),
+        exams: [...payload.exams, ...localExams.filter((exam) => !cloudExamIds.has(exam.id))].map((exam) => { const item = exam as SavedExam & { updated_at?: string; duration_minutes?: number }; return { ...item, durationMinutes: item.durationMinutes || item.duration_minutes || item.questions.length, updatedAt: item.updatedAt || item.updated_at || new Date().toISOString() } }).sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)),
         attempts: [...payload.attempts, ...localAttempts.filter((attempt) => !cloudAttemptIds.has(attempt.id))].map((attempt) => { const item = attempt as SavedAttempt & { exam_id?: string | null; completed_at?: string }; return { ...item, examId: item.examId || item.exam_id || '', completedAt: item.completedAt || item.completed_at || '' } }).sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt)),
       })
       setHistoryTab('attempts')
@@ -422,12 +427,14 @@ function App() {
     setHistory(null)
     setQuestionSet(exam.questions.map((question) => ({ ...question })))
     setExamTitle(exam.title)
+    const nextDurationMinutes = Math.min(300, Math.max(1, Number(exam.durationMinutes) || exam.questions.length))
+    setDurationMinutes(nextDurationMinutes)
     setCurrentExamId(exam.id)
     sessionStorage.removeItem(SESSION_KEY)
     setAnswers({})
     setMarked([])
     setCurrentIndex(0)
-    setTimeLeft(examDuration(exam.questions.length))
+    setTimeLeft(examDuration(exam.questions.length, nextDurationMinutes))
     setResult(null)
     setShowReview(false)
     setWasAutoSubmitted(false)
@@ -436,7 +443,7 @@ function App() {
   }
 
   function shareCurrentExam(questions: GeneratedQuestion[], title: string) {
-    const link = createShareUrl({ title, questions: questions.map((question, index) => ({ id: index + 1, category: question.category, prompt: question.prompt, options: question.options, correct: question.correctIndex, explanation: question.explanation })) })
+    const link = createShareUrl({ title, durationMinutes, questions: questions.map((question, index) => ({ id: index + 1, category: question.category, prompt: question.prompt, options: question.options, correct: question.correctIndex, explanation: question.explanation })) })
     void navigator.clipboard?.writeText(link)
     setAuthMessage('Đã sao chép link chia sẻ vào bộ nhớ tạm.')
   }
@@ -452,7 +459,7 @@ function App() {
   }
 
   if (phase === 'builder') {
-    return <QuestionBuilder onBack={() => setPhase('welcome')} onStartExam={(generatedQuestions, title) => startExam(generatedQuestions, title)} />
+    return <QuestionBuilder onBack={() => setPhase('welcome')} onStartExam={(generatedQuestions, title, durationMinutes) => startExam(generatedQuestions, title, durationMinutes)} />
   }
 
   if (phase === 'welcome') {
@@ -514,7 +521,7 @@ function App() {
           </section>
           <div className="result-grid">
             <section className="result-detail-card">
-              <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(examDuration(result.total) - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>
+              <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(examDuration(result.total, durationMinutes) - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>
               <div className="card-divider" />
               <div className="analysis-header"><div><h3>Phân tích theo chủ đề</h3><p>Bạn đang làm tốt ở đâu?</p></div><ListChecks size={21} /></div>
               <div className="category-list">{result.categories.map((category) => <div className="category-item" key={category.name}><div className="category-label"><span>{category.name}</span><strong>{category.correct}/{category.total}</strong></div><div className="category-track"><span style={{ width: `${(category.correct / category.total) * 100}%` }} /></div></div>)}</div>

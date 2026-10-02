@@ -50,6 +50,7 @@ type SessionState = {
   currentIndex: number
   timeLeft: number
   examTitle?: string
+  questionSet?: Question[]
 }
 
 type Result = {
@@ -67,8 +68,11 @@ type History = {
 
 type HistoryTab = 'attempts' | 'exams'
 
-const EXAM_DURATION = 12 * 60
 const SESSION_KEY = 'examflow-session-v1'
+
+function examDuration(questionCount: number) {
+  return Math.max(1, questionCount) * 60
+}
 
 const QUESTIONS: Question[] = [
   {
@@ -198,13 +202,14 @@ function AppLogo({ compact = false }: { compact?: boolean }) {
 function App() {
   const restored = useMemo(() => loadSession(), [])
   const shared = useMemo(() => readSharedExam(), [])
+  const initialQuestionSet = restored?.questionSet?.length ? restored.questionSet : shared?.questions?.map((question) => ({ ...question })) || QUESTIONS
   const [phase, setPhase] = useState<Phase>(restored || shared ? 'quiz' : 'welcome')
   const [examTitle, setExamTitle] = useState(restored?.examTitle || shared?.title || 'Bài thi mẫu · Nền tảng Web')
-  const [questionSet, setQuestionSet] = useState<Question[]>(shared?.questions?.map((question) => ({ ...question })) || QUESTIONS)
+  const [questionSet, setQuestionSet] = useState<Question[]>(initialQuestionSet)
   const [currentIndex, setCurrentIndex] = useState(restored?.currentIndex ?? 0)
   const [answers, setAnswers] = useState<Answers>(restored?.answers ?? {})
   const [marked, setMarked] = useState<number[]>(restored?.marked ?? [])
-  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? EXAM_DURATION)
+  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? examDuration(initialQuestionSet.length))
   const [result, setResult] = useState<Result | null>(null)
   const [showSubmitDialog, setShowSubmitDialog] = useState(false)
   const [showReview, setShowReview] = useState(false)
@@ -230,8 +235,8 @@ function App() {
 
   useEffect(() => {
     if (phase !== 'quiz') return
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, marked, currentIndex, timeLeft, examTitle }))
-  }, [answers, currentIndex, examTitle, marked, phase, timeLeft])
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ answers, marked, currentIndex, timeLeft, examTitle, questionSet }))
+  }, [answers, currentIndex, examTitle, marked, phase, questionSet, timeLeft])
 
   useEffect(() => {
     if (phase !== 'quiz') return
@@ -290,7 +295,7 @@ function App() {
     setAnswers({})
     setMarked([])
     setCurrentIndex(0)
-    setTimeLeft(EXAM_DURATION)
+    setTimeLeft(examDuration(nextQuestionSet.length))
     setResult(null)
     setShowReview(false)
     setShowResultPopup(false)
@@ -422,7 +427,7 @@ function App() {
     setAnswers({})
     setMarked([])
     setCurrentIndex(0)
-    setTimeLeft(EXAM_DURATION)
+    setTimeLeft(examDuration(exam.questions.length))
     setResult(null)
     setShowReview(false)
     setWasAutoSubmitted(false)
@@ -509,7 +514,7 @@ function App() {
           </section>
           <div className="result-grid">
             <section className="result-detail-card">
-              <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(EXAM_DURATION - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>
+              <div className="result-stat-row"><div className="result-stat"><span className="stat-icon stat-icon--green"><Check size={17} /></span><div><strong>{result.correct}/{result.total}</strong><span>CÂU ĐÚNG</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--coral"><XCircle size={17} /></span><div><strong>{result.total - result.correct - result.unanswered}</strong><span>CÂU SAI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--yellow"><Clock3 size={17} /></span><div><strong>{result.unanswered}</strong><span>CHƯA TRẢ LỜI</span></div></div><div className="result-stat"><span className="stat-icon stat-icon--blue"><Flag size={17} /></span><div><strong>{formatTime(examDuration(result.total) - timeLeft)}</strong><span>THỜI GIAN LÀM</span></div></div></div>
               <div className="card-divider" />
               <div className="analysis-header"><div><h3>Phân tích theo chủ đề</h3><p>Bạn đang làm tốt ở đâu?</p></div><ListChecks size={21} /></div>
               <div className="category-list">{result.categories.map((category) => <div className="category-item" key={category.name}><div className="category-label"><span>{category.name}</span><strong>{category.correct}/{category.total}</strong></div><div className="category-track"><span style={{ width: `${(category.correct / category.total) * 100}%` }} /></div></div>)}</div>
